@@ -4,8 +4,16 @@ public class PlayerMove : MonoBehaviour
 {
     [Header("移動設定")]
     public float moveSpeed = 5f;
-    public float jumpForce = 10f;
     public float rotationSpeed = 100f;
+    
+    [Header("蓄力跳躍設定")]
+    public float minJumpForce = 5f;      // 最小跳躍力度
+    public float maxJumpForce = 15f;     // 最大跳躍力度
+    public float chargeRate = 20f;       // 蓄力速度
+    public float maxChargeTime = 1.5f;   // 最大蓄力時間
+    
+    [Header("跳躍緩衝設定")]
+    public float coyoteTime = 0.15f;     // 土狼時間（離地後仍可跳躍的時間）
     
     [Header("地面檢測")]
     public Transform groundCheck;
@@ -19,6 +27,33 @@ public class PlayerMove : MonoBehaviour
     private Rigidbody rb;
     private bool isGrounded;
     private Vector3 moveDirection;
+    
+    [Header("蓄力狀態")]
+    private bool isCharging = false;
+    private float currentChargeTime = 0f;
+    private float currentJumpForce = 0f;
+    
+    [Header("跳躍緩衝狀態")]
+    private float lastGroundedTime = 0f;     // 最後一次在地面的時間
+    private bool wasGrounded = false;        // 上一幀是否在地面
+    
+    // 獲取蓄力進度（0-1之間），供UI使用
+    public float GetChargeProgress()
+    {
+        return Mathf.Clamp01(currentChargeTime / maxChargeTime);
+    }
+    
+    // 獲取當前跳躍力度，供UI使用
+    public float GetCurrentJumpForce()
+    {
+        return currentJumpForce;
+    }
+    
+    // 是否正在蓄力，供UI使用
+    public bool IsCharging()
+    {
+        return isCharging;
+    }
     
     void Start()
     {
@@ -63,14 +98,17 @@ public class PlayerMove : MonoBehaviour
         // 檢測是否在地面上
         CheckGrounded();
         
+        // 更新土狼時間
+        UpdateCoyoteTime();
+        
         // 獲取輸入
         HandleInput();
         
         // 移動角色
         MovePlayer();
         
-        // 跳躍
-        HandleJump();
+        // 蓄力跳躍
+        HandleChargeJump();
     }
     
     void CheckGrounded()
@@ -137,16 +175,141 @@ public class PlayerMove : MonoBehaviour
         }
     }
     
-    void HandleJump()
+    void HandleChargeJump()
     {
-        // 空格鍵跳躍，且必須在地面上
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        // 開始蓄力（按下跳躍鍵）
+        if (Input.GetButtonDown("Jump"))
+        {
+            if (isCharging && CanJump())
+            {
+                // 如果已經預蓄力且現在可以跳躍，立即釋放
+                ReleaseJump();
+            }
+            else if (!isCharging)
+            {
+                if (CanJump())
+                {
+                    // 在地面或土狼時間內，立即開始蓄力
+                    StartCharging();
+                }
+                else
+                {
+                    // 在空中，開始預蓄力
+                    StartPreCharging();
+                }
+            }
+        }
+        
+        // 持續蓄力（按住跳躍鍵且正在蓄力）
+        if (Input.GetButton("Jump") && isCharging)
+        {
+            ContinueCharging();
+        }
+        
+        // 釋放跳躍（鬆開跳躍鍵）
+        if (Input.GetButtonUp("Jump") && isCharging)
+        {
+            ReleaseJump();
+        }
+        
+        // 如果不在蓄力狀態，重置蓄力時間
+        if (!isCharging)
+        {
+            currentChargeTime = 0f;
+        }
+    }
+    
+    void StartCharging()
+    {
+        isCharging = true;
+        currentChargeTime = 0f;
+        currentJumpForce = minJumpForce;
+        Debug.Log("開始蓄力跳躍 - 按住空格鍵蓄力，鬆開釋放");
+    }
+    
+    void StartPreCharging()
+    {
+        isCharging = true;
+        currentChargeTime = 0f;
+        currentJumpForce = minJumpForce;
+        Debug.Log("空中預蓄力開始 - 著地後可立即跳躍");
+    }
+    
+    void ContinueCharging()
+    {
+        currentChargeTime += Time.deltaTime;
+        
+        // 計算蓄力進度（0到1之間）
+        float chargeProgress = Mathf.Clamp01(currentChargeTime / maxChargeTime);
+        
+        // 使用平滑曲線計算跳躍力度
+        currentJumpForce = Mathf.Lerp(minJumpForce, maxJumpForce, chargeProgress);
+        
+        // 蓄力達到最大值後停止增加，但不自動釋放
+        if (currentChargeTime >= maxChargeTime)
+        {
+            currentChargeTime = maxChargeTime;
+            currentJumpForce = maxJumpForce;
+        }
+    }
+    
+    void ReleaseJump()
+    {
+        if (CanJump())
         {
             // 重置Y軸速度，確保跳躍高度一致
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * currentJumpForce, ForceMode.Impulse);
+            
+            float chargeProgress = GetChargeProgress();
+            bool usingCoyoteTime = !isGrounded && (Time.time - lastGroundedTime <= coyoteTime);
+            string jumpType = usingCoyoteTime ? " [土狼時間]" : " [地面跳躍]";
+            Debug.Log($"跳躍力度: {currentJumpForce:F1} (蓄力時間: {currentChargeTime:F2}s, 進度: {chargeProgress:P0}){jumpType}");
+            
+            // 重置蓄力狀態
+            isCharging = false;
+            currentChargeTime = 0f;
+            currentJumpForce = minJumpForce;
+        }
+        else
+        {
+            // 在空中釋放，保存蓄力狀態，等待手動釋放
+            float chargeProgress = GetChargeProgress();
+            Debug.Log($"空中預蓄力完成 - 力度: {currentJumpForce:F1} (蓄力時間: {currentChargeTime:F2}s, 進度: {chargeProgress:P0}) - 著地後按空格鍵釋放");
+            // 保持蓄力狀態，不重置
         }
     }
+    
+    void UpdateCoyoteTime()
+    {
+        // 記錄地面狀態變化
+        if (isGrounded)
+        {
+            lastGroundedTime = Time.time;
+        }
+        
+        wasGrounded = isGrounded;
+    }
+    
+    bool CanJump()
+    {
+        // 檢查是否在地面上
+        if (isGrounded)
+        {
+            return true;
+        }
+        
+        // 檢查土狼時間（離地後仍可跳躍的時間）
+        float timeSinceGrounded = Time.time - lastGroundedTime;
+        if (timeSinceGrounded <= coyoteTime)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
     
     // 在Scene視圖中顯示地面檢測範圍
     void OnDrawGizmosSelected()
