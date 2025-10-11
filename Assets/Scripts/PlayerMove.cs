@@ -10,7 +10,7 @@ public class PlayerMove : MonoBehaviour
     [Header("地面檢測")]
     public Transform groundCheck;
     public float groundCheckHeight = 0.1f;
-    public float groundCheckWidth = 0.5f;
+    public float groundCheckWidth = 0.4f; // capsule較窄，調整檢測寬度
     public LayerMask groundMask;
     
     [Header("攝像機")]
@@ -34,21 +34,21 @@ public class PlayerMove : MonoBehaviour
             }
         }
         
-        // 如果沒有地面檢測點，創建一個
+        // 如果沒有地面檢測點，創建一個（針對capsule調整位置）
         if (groundCheck == null)
         {
             GameObject groundCheckObj = new GameObject("GroundCheck");
             groundCheckObj.transform.SetParent(transform);
-            groundCheckObj.transform.localPosition = new Vector3(0, -1f, 0);
+            groundCheckObj.transform.localPosition = new Vector3(0, -0.5f, 0); // capsule底部偏移
             groundCheck = groundCheckObj.transform;
         }
         
-        // 設定物理材質，避免在斜坡上滑動
+        // 設定物理材質，針對capsule優化（減少滑動，適合滾動移動）
         PhysicsMaterial playerPhysicsMaterial = new PhysicsMaterial("PlayerPhysics");
-        playerPhysicsMaterial.dynamicFriction = 0.6f;
-        playerPhysicsMaterial.staticFriction = 0.6f;
-        playerPhysicsMaterial.bounciness = 0f;
-        playerPhysicsMaterial.frictionCombine = PhysicsMaterialCombine.Average;
+        playerPhysicsMaterial.dynamicFriction = 0.8f;  // 增加摩擦力，適合capsule
+        playerPhysicsMaterial.staticFriction = 0.9f;   // 增加靜摩擦力
+        playerPhysicsMaterial.bounciness = 0.1f;       // 稍微增加彈性，模擬capsule特性
+        playerPhysicsMaterial.frictionCombine = PhysicsMaterialCombine.Maximum; // 使用最大摩擦力
         playerPhysicsMaterial.bounceCombine = PhysicsMaterialCombine.Minimum;
         
         Collider playerCollider = GetComponent<Collider>();
@@ -75,21 +75,21 @@ public class PlayerMove : MonoBehaviour
     
     void CheckGrounded()
     {
-        // 使用射線檢測地面，從角色底部向下發射
-        Vector3 rayStart = transform.position + Vector3.up * 0.1f; // 稍微向上偏移避免與地面重疊
-        isGrounded = Physics.Raycast(rayStart, Vector3.down, 1.2f, groundMask);
+        // 使用射線檢測地面，針對capsule調整檢測距離
+        Vector3 rayStart = transform.position + Vector3.up * 0.05f; // capsule需要更小的偏移
+        isGrounded = Physics.Raycast(rayStart, Vector3.down, 1.1f, groundMask); // 調整檢測距離
         
-        // 額外的射線檢測，確保更準確的地面檢測
+        // 額外的射線檢測，針對capsule形狀優化
         Vector3[] rayPositions = {
-            transform.position + new Vector3(groundCheckWidth, 0.1f, 0),
-            transform.position + new Vector3(-groundCheckWidth, 0.1f, 0),
-            transform.position + new Vector3(0, 0.1f, groundCheckWidth),
-            transform.position + new Vector3(0, 0.1f, -groundCheckWidth)
+            transform.position + new Vector3(groundCheckWidth * 0.7f, 0.05f, 0), // 縮小檢測範圍
+            transform.position + new Vector3(-groundCheckWidth * 0.7f, 0.05f, 0),
+            transform.position + new Vector3(0, 0.05f, groundCheckWidth * 0.7f),
+            transform.position + new Vector3(0, 0.05f, -groundCheckWidth * 0.7f)
         };
         
         foreach (Vector3 pos in rayPositions)
         {
-            if (Physics.Raycast(pos, Vector3.down, 1.2f, groundMask))
+            if (Physics.Raycast(pos, Vector3.down, 1.1f, groundMask))
             {
                 isGrounded = true;
                 break;
@@ -153,26 +153,30 @@ public class PlayerMove : MonoBehaviour
     {
         // 繪製主要檢測射線
         Gizmos.color = isGrounded ? Color.green : Color.red;
-        Vector3 rayStart = transform.position + Vector3.up * 0.1f;
-        Gizmos.DrawRay(rayStart, Vector3.down * 1.2f);
+        Vector3 rayStart = transform.position + Vector3.up * 0.05f;
+        Gizmos.DrawRay(rayStart, Vector3.down * 1.1f);
         
-        // 繪製額外的檢測射線
+        // 繪製額外的檢測射線（針對capsule優化）
         Gizmos.color = isGrounded ? Color.green : Color.yellow;
         Vector3[] rayPositions = {
-            transform.position + new Vector3(groundCheckWidth, 0.1f, 0),
-            transform.position + new Vector3(-groundCheckWidth, 0.1f, 0),
-            transform.position + new Vector3(0, 0.1f, groundCheckWidth),
-            transform.position + new Vector3(0, 0.1f, -groundCheckWidth)
+            transform.position + new Vector3(groundCheckWidth * 0.7f, 0.05f, 0),
+            transform.position + new Vector3(-groundCheckWidth * 0.7f, 0.05f, 0),
+            transform.position + new Vector3(0, 0.05f, groundCheckWidth * 0.7f),
+            transform.position + new Vector3(0, 0.05f, -groundCheckWidth * 0.7f)
         };
         
         foreach (Vector3 pos in rayPositions)
         {
-            Gizmos.DrawRay(pos, Vector3.down * 1.2f);
+            Gizmos.DrawRay(pos, Vector3.down * 1.1f);
         }
         
-        // 繪製檢測範圍的邊界框
+        // 繪製capsule形狀的檢測範圍
         Gizmos.color = Color.blue;
-        Vector3 boxCenter = transform.position + Vector3.down * 0.5f;
-        Gizmos.DrawWireCube(boxCenter, new Vector3(groundCheckWidth * 2, groundCheckHeight, groundCheckWidth * 2));
+        Vector3 capsuleCenter = transform.position + Vector3.down * 0.25f;
+        Gizmos.DrawWireCube(capsuleCenter, new Vector3(groundCheckWidth * 1.4f, groundCheckHeight, groundCheckWidth * 1.4f));
+        
+        // 額外繪製capsule的圓柱形邊界
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position + Vector3.down * 0.5f, groundCheckWidth * 0.7f);
     }
 }
