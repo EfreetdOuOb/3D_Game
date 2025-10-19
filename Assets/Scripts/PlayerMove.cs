@@ -55,6 +55,18 @@ public class PlayerMove : MonoBehaviour
         return isCharging;
     }
     
+    // 獲取玩家移動方向，供跳墊使用
+    public Vector3 GetMoveDirection()
+    {
+        return moveDirection;
+    }
+    
+    // 獲取玩家當前速度，供跳墊使用
+    public Vector3 GetCurrentVelocity()
+    {
+        return rb.linearVelocity;
+    }
+    
     void Start()
     {
         rb = GetComponent<Rigidbody>();
