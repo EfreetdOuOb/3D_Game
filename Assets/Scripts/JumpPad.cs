@@ -3,11 +3,11 @@ using UnityEngine;
 public class JumpPad : MonoBehaviour
 {
     [Header("跳墊設定")]
-    public float jumpForce = 20f;           // 跳墊力度
-    public float upwardForce = 15f;          // 向上力度
-    public float forwardForce = 5f;          // 向前力度
-    public bool usePlayerDirection = true;    // 是否使用玩家移動方向
-    public float cooldownTime = 0.5f;        // 冷卻時間
+    public float jumpForce = 20f;            // 跳墊力度
+    public float bounceMultiplier = 1.5f;    // 彈跳倍數
+    public bool preserveHorizontalVelocity = true;  // 保持水平速度
+    public bool addUpwardForce = true;       // 添加向上力度
+    public float cooldownTime = 0.3f;        // 冷卻時間
     
     [Header("視覺效果")]
     public ParticleSystem jumpEffect;        // 跳躍特效
@@ -102,34 +102,32 @@ public class JumpPad : MonoBehaviour
         Rigidbody playerRb = player.GetComponent<Rigidbody>();
         if (playerRb == null) return;
         
-        // 計算跳躍方向
-        Vector3 jumpDirection = Vector3.up;
+        // 獲取當前速度
+        Vector3 currentVelocity = playerRb.linearVelocity;
         
-        if (usePlayerDirection)
+        // 計算新的速度
+        Vector3 newVelocity = currentVelocity;
+        
+        // 如果保持水平速度
+        if (preserveHorizontalVelocity)
         {
-            // 獲取玩家移動方向
-            PlayerMove playerMove = player.GetComponent<PlayerMove>();
-            if (playerMove != null)
-            {
-                // 獲取玩家移動方向，但主要向上
-                Vector3 playerDirection = playerMove.transform.forward;
-                jumpDirection = (Vector3.up + playerDirection * 0.3f).normalized;
-            }
+            // 保持X和Z軸速度，只改變Y軸
+            newVelocity.y = jumpForce;
+        }
+        else
+        {
+            // 完全重置速度，只向上
+            newVelocity = Vector3.up * jumpForce;
         }
         
-        // 應用跳躍力度
-        Vector3 jumpForceVector = jumpDirection * jumpForce;
-        playerRb.AddForce(jumpForceVector, ForceMode.Impulse);
-        
-        // 應用額外的向上力度
-        playerRb.AddForce(Vector3.up * upwardForce, ForceMode.Impulse);
-        
-        // 如果玩家有移動，添加向前力度
-        if (usePlayerDirection)
+        // 如果添加向上力度
+        if (addUpwardForce)
         {
-            Vector3 forwardDirection = player.transform.forward;
-            playerRb.AddForce(forwardDirection * forwardForce, ForceMode.Impulse);
+            newVelocity.y += jumpForce * bounceMultiplier;
         }
+        
+        // 應用新速度
+        playerRb.linearVelocity = newVelocity;
         
         // 觸發視覺和音效效果
         TriggerEffects();
@@ -138,7 +136,7 @@ public class JumpPad : MonoBehaviour
         isOnCooldown = true;
         lastJumpTime = Time.time;
         
-        Debug.Log($"跳墊觸發！力度: {jumpForce}, 玩家: {player.name}");
+        Debug.Log($"跳墊觸發！力度: {jumpForce}, 新Y速度: {newVelocity.y:F2}, 玩家: {player.name}");
     }
     
     void TriggerEffects()
@@ -195,12 +193,21 @@ public class JumpPad : MonoBehaviour
         Gizmos.color = isOnCooldown ? Color.red : Color.green;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
         
-        // 繪製跳躍方向
+        // 繪製跳躍力度
         Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(transform.position, Vector3.up * 2f);
+        float jumpHeight = jumpForce / 5f; // 縮放顯示
+        Gizmos.DrawRay(transform.position, Vector3.up * jumpHeight);
         
         // 繪製跳墊邊界
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(transform.position, Vector3.one);
+        
+        // 繪製彈跳倍數效果
+        if (addUpwardForce)
+        {
+            Gizmos.color = Color.cyan;
+            float bounceHeight = (jumpForce * bounceMultiplier) / 5f;
+            Gizmos.DrawRay(transform.position + Vector3.right * 0.3f, Vector3.up * bounceHeight);
+        }
     }
 }
