@@ -37,6 +37,9 @@ public class PlayerMove : MonoBehaviour
     private float lastGroundedTime = 0f;     // 最後一次在地面的時間
     private bool wasGrounded = false;        // 上一幀是否在地面
     
+    [Header("跳躍啟用（支援地板debuff）")]
+    public bool canJump = true;
+    
     // 獲取蓄力進度（0-1之間），供UI使用
     public float GetChargeProgress()
     {
@@ -305,6 +308,8 @@ public class PlayerMove : MonoBehaviour
     
     bool CanJump()
     {
+        // 新增判斷canJump欄位
+        if (!canJump) return false;
         // 檢查是否在地面上
         if (isGrounded)
         {

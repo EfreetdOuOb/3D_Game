@@ -11,6 +11,9 @@ public class Fan : MonoBehaviour
     public FanMode mode = FanMode.Continuous;
     public float forceStrength = 10f;
 
+    // 粒子特效
+    public ParticleSystem fanParticle;
+
     // Oscillate 模式參數
     public float oscillateAngle = 45f; // 左右最大搖擺角度
     [Min(0.01f)] public float oscillateSpeed = 1.0f; // 不可為0
@@ -25,13 +28,13 @@ public class Fan : MonoBehaviour
     private void Start()
     {
         baseY = transform.eulerAngles.y;
+        ParticlePlayIfNeed();
     }
 
     private void Update()
     {
         if (mode == FanMode.Oscillate)
         {
-            // 防呆: 避免oscillateSpeed為0產生錯誤
             if (oscillateSpeed <= 0.0f)
                 return;
             float oscPhase = Mathf.Sin(Time.time * Mathf.PI * 2 / oscillateSpeed);
@@ -47,14 +50,37 @@ public class Fan : MonoBehaviour
             {
                 isBlowing = false;
                 timer = 0f;
+                ParticlePlayIfNeed();
             }
             else if (!isBlowing && timer >= windOffDuration)
             {
                 isBlowing = true;
                 timer = 0f;
+                ParticlePlayIfNeed();
             }
         }
-        // Continuous 無需特別處理
+        // 持續風無需處理粒子特效（可自行Always Play）
+    }
+
+    private void ParticlePlayIfNeed()
+    {
+        if (fanParticle == null) return;
+        if (mode == FanMode.Intermittent)
+        {
+            if (isBlowing)
+            {
+                if (!fanParticle.isPlaying)
+                    fanParticle.Play(true); // 立即顯示粒子
+            }
+            else
+            {
+                if (fanParticle.isPlaying)
+                {
+                    fanParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    fanParticle.Clear(true); // 立即清空所有現有粒子
+                }
+            }
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -82,3 +108,4 @@ public class Fan : MonoBehaviour
         Gizmos.DrawRay(start + dir * arrowLength, left  * 0.5f);
     }
 }
+
