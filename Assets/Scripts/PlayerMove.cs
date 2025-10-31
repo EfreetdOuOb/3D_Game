@@ -95,11 +95,11 @@ public class PlayerMove : MonoBehaviour
         
         // 設定物理材質，針對capsule優化（減少滑動，適合滾動移動）
         PhysicsMaterial playerPhysicsMaterial = new PhysicsMaterial("PlayerPhysics");
-        playerPhysicsMaterial.dynamicFriction = 0.8f;  // 增加摩擦力，適合capsule
-        playerPhysicsMaterial.staticFriction = 0.9f;   // 增加靜摩擦力
+        playerPhysicsMaterial.dynamicFriction = 0;  // 增加摩擦力，適合capsule
+        playerPhysicsMaterial.staticFriction = 0;   // 增加靜摩擦力
         playerPhysicsMaterial.bounciness = 0.1f;       // 稍微增加彈性，模擬capsule特性
-        playerPhysicsMaterial.frictionCombine = PhysicsMaterialCombine.Maximum; // 使用最大摩擦力
-        playerPhysicsMaterial.bounceCombine = PhysicsMaterialCombine.Minimum;
+        playerPhysicsMaterial.frictionCombine = PhysicsMaterialCombine.Multiply; // 使用最大摩擦力
+        playerPhysicsMaterial.bounceCombine = PhysicsMaterialCombine.Multiply;
         
         Collider playerCollider = GetComponent<Collider>();
         if (playerCollider != null)
