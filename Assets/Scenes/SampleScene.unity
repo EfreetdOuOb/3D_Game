@@ -289,9 +289,9 @@ MonoBehaviour:
     m_Bits: 1
   playerCamera: {fileID: 330585545}
   canJump: 1
-  maxEnergy: 100
+  maxEnergy: 300
   energyConsumptionRate: 10
-  minEnergyThreshold: 5
+  minEnergyThreshold: 40
   energyRechargeRate: 0
   highEnergyJumpMultiplier: 1.5
   highEnergySpeedMultiplier: 1.3
@@ -3987,9 +3987,25 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2792404833789588640, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2844468207177788023, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_Name
       value: HUD
+      objectReference: {fileID: 0}
+    - target: {fileID: 3631448134161144026, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 35776490}
+    - target: {fileID: 3631448134161144026, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
+      propertyPath: hideEnergyHandle
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5131349824998348643, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6700754932148129765, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_AnchorMax.y
@@ -6406,10 +6422,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3697366669767564960, guid: 87415e5e689072c45b221b0aa94fdbcf, type: 3}
-      propertyPath: detectionRadius
-      value: 0.25
-      objectReference: {fileID: 0}
     - target: {fileID: 6142557451738641554, guid: 87415e5e689072c45b221b0aa94fdbcf, type: 3}
       propertyPath: m_Name
       value: cofe
