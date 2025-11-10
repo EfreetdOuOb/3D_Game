@@ -241,6 +241,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8948030575262174825, guid: e17557aadb26b8c45a598b3ef8411d75, type: 3}
   m_PrefabInstance: {fileID: 26546905}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &26546907 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1501650036483941173, guid: e17557aadb26b8c45a598b3ef8411d75, type: 3}
+  m_PrefabInstance: {fileID: 26546905}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &35776489
 GameObject:
   m_ObjectHideFlags: 0
@@ -1313,7 +1318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   titlePanel: {fileID: 0}
-  settingsPanel: {fileID: 0}
+  settingsPanel: {fileID: 26546907}
   pausePanel: {fileID: 1091939693}
 --- !u!1 &450645575
 GameObject:
@@ -2676,6 +2681,10 @@ PrefabInstance:
       propertyPath: m_Center.z
       value: 0.5601308
       objectReference: {fileID: 0}
+    - target: {fileID: 7269621309380543162, guid: fe6f93dbe519c9743be61a06f7c7ff36, type: 3}
+      propertyPath: mode
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4000,8 +4009,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 35776490}
     - target: {fileID: 3631448134161144026, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
+      propertyPath: hideChargeHandle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3631448134161144026, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: hideEnergyHandle
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5131349824998348643, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_AnchorMax.y

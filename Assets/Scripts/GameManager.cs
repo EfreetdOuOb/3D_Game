@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class GameManager : MonoBehaviour
 	[Header("狀態")]
 	public bool IsPaused { get; private set; } = false;
 	public bool IsInSettings { get; private set; } = false;
+	private bool settingsOpenedFromPause = false; // 記錄設定是否從暫停面板開啟
 
 	public event Action<bool> OnPauseChanged; // 參數：是否暫停
 	public event Action<bool> OnSettingsToggled; // 參數：是否開啟設定
@@ -78,9 +81,18 @@ public class GameManager : MonoBehaviour
 		IsPaused = false;
 		Time.timeScale = 1f;
 		AudioListener.pause = false;
-		// 若遊戲需鎖定滑鼠，請在此調整（或由玩家控制器接手）
-		Cursor.visible = false;
+
+		// 清除任何已選取的 UI，避免需要再點一下才回到遊戲
+		if (EventSystem.current != null)
+		{
+			EventSystem.current.SetSelectedGameObject(null);
+		}
+
+		// 立即與下一幀都設定游標狀態，避免焦點切換造成一次點擊才隱藏
 		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+		StartCoroutine(ApplyGameplayCursorNextFrame());
+
 		OnPauseChanged?.Invoke(false);
 	}
 
@@ -112,14 +124,19 @@ public class GameManager : MonoBehaviour
 		SceneManager.LoadScene(gameplaySceneName);
 
 		// 進入遊戲時隱藏游標（若你的遊戲需要顯示游標，可移除此段）
-		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+		StartCoroutine(ApplyGameplayCursorNextFrame());
 	}
 
 	// 開啟設定：只切換狀態並廣播，由 UI 來顯示設定面板
 	public void OpenSettings()
 	{
 		if (IsInSettings) return;
+		
+		// 記錄設定是從暫停面板還是標題開啟的
+		settingsOpenedFromPause = IsPaused && SceneManager.GetActiveScene().name != titleSceneName;
+		
 		IsInSettings = true;
 		OnSettingsToggled?.Invoke(true);
 	}
@@ -129,7 +146,17 @@ public class GameManager : MonoBehaviour
 	{
 		if (!IsInSettings) return;
 		IsInSettings = false;
+		
+		// 如果設定是從暫停面板開啟的，關閉設定時恢復暫停面板顯示
+		// 注意：IsPaused 應該還是 true，所以我們直接觸發事件來顯示暫停面板
+		if (settingsOpenedFromPause && IsPaused)
+		{
+			// 直接觸發暫停事件來顯示暫停面板（因為 IsPaused 已經是 true，PauseGame() 會直接返回）
+			OnPauseChanged?.Invoke(true);
+		}
+		
 		OnSettingsToggled?.Invoke(false);
+		settingsOpenedFromPause = false; // 重置標記
 	}
 
 	// 離開遊戲（可直接綁定到按鈕）
@@ -141,6 +168,14 @@ public class GameManager : MonoBehaviour
 #else
 		Application.Quit();
 #endif
+	}
+
+	IEnumerator ApplyGameplayCursorNextFrame()
+	{
+		// 等待一幀，確保 UI/事件系統已處理完畢後再次鎖定與隱藏游標
+		yield return null;
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
 	}
 }
 

@@ -43,8 +43,39 @@ public class UIManager : MonoBehaviour
 	{
 		SetSettingsPanel(open);
 
-		// 開啟設定時可選擇隱藏標題主選單（視 UI 流程而定）
-		if (titlePanel != null) titlePanel.SetActive(!open);
+		if (open)
+		{
+			// 開啟設定時
+			// 若在標題場景，隱藏標題主選單
+			if (titlePanel != null && GameManager.Instance != null && 
+			    UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == GameManager.Instance.titleSceneName)
+			{
+				titlePanel.SetActive(false);
+			}
+			
+			// 若從遊戲中的暫停面板進入設定，需關閉暫停面板（避免兩層 UI 疊在一起）
+			if (GameManager.Instance != null && GameManager.Instance.IsPaused)
+			{
+				SetPausePanel(false);
+			}
+		}
+		else
+		{
+			// 關閉設定時
+			// 若在標題場景，顯示標題主選單
+			if (titlePanel != null && GameManager.Instance != null && 
+			    UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == GameManager.Instance.titleSceneName)
+			{
+				titlePanel.SetActive(true);
+			}
+			
+			// 若從暫停面板進入設定，關閉設定時恢復暫停面板顯示
+			if (GameManager.Instance != null && GameManager.Instance.IsPaused && 
+			    UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != GameManager.Instance.titleSceneName)
+			{
+				SetPausePanel(true);
+			}
+		}
 	}
 
 	void SetPausePanel(bool show)
@@ -105,16 +136,14 @@ public class UIManager : MonoBehaviour
 		}
 	}
 
-	// 關閉設定（返回標題主選單）
+	// 關閉設定（返回上一頁：標題主選單或暫停面板）
 	public void OnCloseSettingsButton()
 	{
 		if (GameManager.Instance != null)
 		{
 			GameManager.Instance.CloseSettings();
 		}
-
-		// 關閉設定後返回標題主 UI
-		if (titlePanel != null) titlePanel.SetActive(true);
+		// HandleSettingsToggled 會自動處理 UI 顯示邏輯，這裡不需要手動設定
 	}
 
 	// 離開遊戲
