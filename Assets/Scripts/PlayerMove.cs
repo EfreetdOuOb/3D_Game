@@ -40,6 +40,21 @@ public class PlayerMove : MonoBehaviour
     [Header("跳躍啟用（支援地板debuff）")]
     public bool canJump = true;
     
+    [Header("高能模式設定")]
+    public float maxEnergy = 100f;              // 最大能量
+    public float energyConsumptionRate = 10f;   // 每秒消耗的能量
+    public float minEnergyThreshold = 5f;       // 自動關閉的最小能量閾值
+    public float energyRechargeRate = 0f;       // 非高能模式下的能量恢復速度（可選）
+    
+    [Header("高能模式能力增強")]
+    public float highEnergyJumpMultiplier = 1.5f;   // 跳躍力倍數
+    public float highEnergySpeedMultiplier = 1.3f;  // 移動速度倍數
+    public float highEnergyRotationMultiplier = 1.2f; // 旋轉速度倍數
+    
+    [Header("高能模式狀態")]
+    private bool isHighEnergyMode = false;      // 是否處於高能模式
+    private float currentEnergy = 100f;         // 當前能量
+    
     // 獲取蓄力進度（0-1之間），供UI使用
     public float GetChargeProgress()
     {
@@ -73,6 +88,9 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        
+        // 初始化能量
+        currentEnergy = maxEnergy;
         
         // 如果沒有攝像機，嘗試找到主攝像機
         if (playerCamera == null)
@@ -115,6 +133,9 @@ public class PlayerMove : MonoBehaviour
         
         // 更新土狼時間
         UpdateCoyoteTime();
+        
+        // 處理高能模式
+        HandleHighEnergyMode();
         
         // 獲取輸入
         HandleInput();
@@ -176,8 +197,18 @@ public class PlayerMove : MonoBehaviour
     
     void MovePlayer()
     {
+        // 計算移動速度（高能模式下增強）
+        float currentMoveSpeed = moveSpeed;
+        float currentRotationSpeed = rotationSpeed;
+        
+        if (isHighEnergyMode)
+        {
+            currentMoveSpeed *= highEnergySpeedMultiplier;
+            currentRotationSpeed *= highEnergyRotationMultiplier;
+        }
+        
         // 應用移動速度
-        Vector3 move = moveDirection * moveSpeed;
+        Vector3 move = moveDirection * currentMoveSpeed;
         
         // 只影響X和Z軸，保持重力效果
         rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
@@ -186,7 +217,7 @@ public class PlayerMove : MonoBehaviour
         if (moveDirection != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, currentRotationSpeed * Time.deltaTime);
         }
     }
     
@@ -272,14 +303,22 @@ public class PlayerMove : MonoBehaviour
     {
         if (CanJump())
         {
+            // 計算跳躍力度（高能模式下增強）
+            float jumpForce = currentJumpForce;
+            if (isHighEnergyMode)
+            {
+                jumpForce *= highEnergyJumpMultiplier;
+            }
+            
             // 重置Y軸速度，確保跳躍高度一致
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-            rb.AddForce(Vector3.up * currentJumpForce, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             
             float chargeProgress = GetChargeProgress();
             bool usingCoyoteTime = !isGrounded && (Time.time - lastGroundedTime <= coyoteTime);
             string jumpType = usingCoyoteTime ? " [土狼時間]" : " [地面跳躍]";
-            Debug.Log($"跳躍力度: {currentJumpForce:F1} (蓄力時間: {currentChargeTime:F2}s, 進度: {chargeProgress:P0}){jumpType}");
+            string energyMode = isHighEnergyMode ? " [高能模式]" : "";
+            Debug.Log($"跳躍力度: {jumpForce:F1} (蓄力時間: {currentChargeTime:F2}s, 進度: {chargeProgress:P0}){jumpType}{energyMode}");
             
             // 重置蓄力狀態
             isCharging = false;
@@ -326,7 +365,93 @@ public class PlayerMove : MonoBehaviour
         return false;
     }
     
+    void HandleHighEnergyMode()
+    {
+        // 檢測右鍵輸入（Fire2 對應滑鼠右鍵或 Alt 鍵）
+        if (Input.GetButtonDown("Fire2"))
+        {
+            ToggleHighEnergyMode();
+        }
+        
+        // 如果處於高能模式，持續消耗能量
+        if (isHighEnergyMode)
+        {
+            currentEnergy -= energyConsumptionRate * Time.deltaTime;
+            currentEnergy = Mathf.Clamp(currentEnergy, 0f, maxEnergy);
+            
+            // 檢查能量是否低於閾值，自動關閉
+            if (currentEnergy <= minEnergyThreshold)
+            {
+                SetHighEnergyMode(false);
+                Debug.Log("能量不足，自動關閉高能模式");
+            }
+        }
+        else if (energyRechargeRate > 0f)
+        {
+            // 非高能模式下可以恢復能量（可選）
+            currentEnergy += energyRechargeRate * Time.deltaTime;
+            currentEnergy = Mathf.Clamp(currentEnergy, 0f, maxEnergy);
+        }
+    }
     
+    void ToggleHighEnergyMode()
+    {
+        // 如果當前能量不足以開啟高能模式，則不允許開啟
+        if (!isHighEnergyMode && currentEnergy <= minEnergyThreshold)
+        {
+            Debug.Log("能量不足，無法開啟高能模式");
+            return;
+        }
+        
+        // 切換高能模式狀態
+        SetHighEnergyMode(!isHighEnergyMode);
+    }
+    
+    void SetHighEnergyMode(bool enable)
+    {
+        isHighEnergyMode = enable;
+        
+        if (enable)
+        {
+            Debug.Log($"高能模式開啟！當前能量: {currentEnergy:F1}/{maxEnergy:F1}");
+        }
+        else
+        {
+            Debug.Log($"高能模式關閉。當前能量: {currentEnergy:F1}/{maxEnergy:F1}");
+        }
+    }
+    
+    // 補充能量（供咖啡道具使用）
+    public void AddEnergy(float amount)
+    {
+        currentEnergy += amount;
+        currentEnergy = Mathf.Clamp(currentEnergy, 0f, maxEnergy);
+        Debug.Log($"補充能量: +{amount:F1}，當前能量: {currentEnergy:F1}/{maxEnergy:F1}");
+    }
+    
+    // 獲取當前能量（供UI使用）
+    public float GetCurrentEnergy()
+    {
+        return currentEnergy;
+    }
+    
+    // 獲取能量百分比（0-1之間，供UI使用）
+    public float GetEnergyPercentage()
+    {
+        return Mathf.Clamp01(currentEnergy / maxEnergy);
+    }
+    
+    // 是否處於高能模式（供UI使用）
+    public bool IsHighEnergyMode()
+    {
+        return isHighEnergyMode;
+    }
+    
+    // 獲取最大能量（供UI使用）
+    public float GetMaxEnergy()
+    {
+        return maxEnergy;
+    }
     
     // 在Scene視圖中顯示地面檢測範圍
     void OnDrawGizmosSelected()
