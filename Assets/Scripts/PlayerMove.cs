@@ -40,6 +40,16 @@ public class PlayerMove : MonoBehaviour
     [Header("跳躍啟用（支援地板debuff）")]
     public bool canJump = true;
     
+    [Header("空中下墜調整")]
+    public bool enableExtraGravity = true;
+    public float fallGravityMultiplier = 2.2f;
+    public float lowJumpGravityMultiplier = 1.8f;
+    public bool enableHangTimeCut = false;
+    public float maxHangTime = 0.35f;
+    public float hangTimeDownForce = 25f;
+    public bool enableFallSpeedClamp = false;
+    public float maxFallSpeed = 35f;
+    
     [Header("高能模式設定")]
     public float maxEnergy = 100f;              // 最大能量
     public float energyConsumptionRate = 10f;   // 每秒消耗的能量
@@ -54,6 +64,11 @@ public class PlayerMove : MonoBehaviour
     [Header("高能模式狀態")]
     private bool isHighEnergyMode = false;      // 是否處於高能模式
     private float currentEnergy = 100f;         // 當前能量
+    
+    [Header("空中狀態紀錄")]
+    private bool isJumpHeld = false;
+    private bool hasJumpedSinceGrounded = false;
+    private float jumpStartTime = -1f;
     
     // 獲取蓄力進度（0-1之間），供UI使用
     public float GetChargeProgress()
@@ -145,6 +160,8 @@ public class PlayerMove : MonoBehaviour
         
         // 蓄力跳躍
         HandleChargeJump();
+        
+        ApplyAirPhysicsModifiers();
     }
     
     void CheckGrounded()
@@ -223,8 +240,13 @@ public class PlayerMove : MonoBehaviour
     
     void HandleChargeJump()
     {
+        bool jumpDown = Input.GetButtonDown("Jump");
+        bool jumpHeld = Input.GetButton("Jump");
+        bool jumpUp = Input.GetButtonUp("Jump");
+        isJumpHeld = jumpHeld;
+        
         // 開始蓄力（按下跳躍鍵）
-        if (Input.GetButtonDown("Jump"))
+        if (jumpDown)
         {
             if (isCharging && CanJump())
             {
@@ -247,13 +269,13 @@ public class PlayerMove : MonoBehaviour
         }
         
         // 持續蓄力（按住跳躍鍵且正在蓄力）
-        if (Input.GetButton("Jump") && isCharging)
+        if (jumpHeld && isCharging)
         {
             ContinueCharging();
         }
         
         // 釋放跳躍（鬆開跳躍鍵）
-        if (Input.GetButtonUp("Jump") && isCharging)
+        if (jumpUp && isCharging)
         {
             ReleaseJump();
         }
@@ -313,6 +335,8 @@ public class PlayerMove : MonoBehaviour
             // 重置Y軸速度，確保跳躍高度一致
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            hasJumpedSinceGrounded = true;
+            jumpStartTime = Time.time;
             
             float chargeProgress = GetChargeProgress();
             bool usingCoyoteTime = !isGrounded && (Time.time - lastGroundedTime <= coyoteTime);
@@ -340,6 +364,8 @@ public class PlayerMove : MonoBehaviour
         if (isGrounded)
         {
             lastGroundedTime = Time.time;
+            hasJumpedSinceGrounded = false;
+            jumpStartTime = -1f;
         }
         
         wasGrounded = isGrounded;
@@ -363,6 +389,53 @@ public class PlayerMove : MonoBehaviour
         }
         
         return false;
+    }
+    
+    void ApplyAirPhysicsModifiers()
+    {
+        if (rb == null)
+        {
+            return;
+        }
+        
+        if (isGrounded)
+        {
+            return;
+        }
+        
+        Vector3 velocity = rb.linearVelocity;
+        
+        if (enableExtraGravity)
+        {
+            if (velocity.y < 0f)
+            {
+                float multiplier = Mathf.Max(1f, fallGravityMultiplier);
+                rb.AddForce(Vector3.up * Physics.gravity.y * (multiplier - 1f), ForceMode.Acceleration);
+            }
+            else if (!isJumpHeld && velocity.y > 0f)
+            {
+                float multiplier = Mathf.Max(1f, lowJumpGravityMultiplier);
+                rb.AddForce(Vector3.up * Physics.gravity.y * (multiplier - 1f), ForceMode.Acceleration);
+            }
+        }
+        
+        if (enableHangTimeCut && hasJumpedSinceGrounded && velocity.y > 0f)
+        {
+            if (Time.time - jumpStartTime >= maxHangTime)
+            {
+                rb.AddForce(Vector3.down * hangTimeDownForce, ForceMode.Acceleration);
+            }
+        }
+        
+        if (enableFallSpeedClamp)
+        {
+            float maxDownSpeed = -Mathf.Abs(maxFallSpeed);
+            if (velocity.y < maxDownSpeed)
+            {
+                velocity.y = maxDownSpeed;
+                rb.linearVelocity = velocity;
+            }
+        }
     }
     
     void HandleHighEnergyMode()

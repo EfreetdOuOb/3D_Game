@@ -430,6 +430,14 @@ MonoBehaviour:
     m_Bits: 1
   playerCamera: {fileID: 330585545}
   canJump: 1
+  enableExtraGravity: 1
+  fallGravityMultiplier: 2.2
+  lowJumpGravityMultiplier: 1.8
+  enableHangTimeCut: 1
+  maxHangTime: 0.35
+  hangTimeDownForce: 25
+  enableFallSpeedClamp: 1
+  maxFallSpeed: 35
   maxEnergy: 300
   energyConsumptionRate: 10
   minEnergyThreshold: 40
