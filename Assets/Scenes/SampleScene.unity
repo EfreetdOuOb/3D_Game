@@ -978,7 +978,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60.000004
+  field of view: 65
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -1382,7 +1382,7 @@ MonoBehaviour:
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
   TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 0, y: 0}
+  Damping: {x: 0.3, y: 0.3}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -1412,13 +1412,13 @@ MonoBehaviour:
   Orbits:
     Top:
       Radius: 2
-      Height: 5
+      Height: 3.35
     Center:
-      Radius: 4
-      Height: 2.25
+      Radius: 4.7
+      Height: 1.5
     Bottom:
       Radius: 2.5
-      Height: 0.1
+      Height: -1.22
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
@@ -1432,7 +1432,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 17.5
+    Value: 19.8
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -1475,7 +1475,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 60.000004
+    FieldOfView: 65
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -1502,8 +1502,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 530992505}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2534013, y: -0.000000019408208, z: 0.0000000050840003, w: 0.9673613}
-  m_LocalPosition: {x: -21.59, y: -3.3709998, z: -44.31}
+  m_LocalRotation: {x: 0.17889722, y: 0.00000002125064, z: -0.0000000038640153, w: 0.98386776}
+  m_LocalPosition: {x: -21.59, y: -3.875055, z: -44.95229}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
