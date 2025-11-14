@@ -6,6 +6,14 @@ public class PlayerMove : MonoBehaviour
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
     
+    [Header("移動慣性設定")]
+    [Tooltip("移動加速度（0 = 無慣性，立即響應；值越大慣性越強）")]
+    public float moveAcceleration = 20f;
+    [Tooltip("停止時的減速度（0 = 立即停止；值越大停止越快）")]
+    public float moveDeceleration = 25f;
+    [Tooltip("是否啟用移動慣性（關閉則立即響應輸入）")]
+    public bool enableMoveInertia = true;
+    
     [Header("蓄力跳躍設定")]
     public float minJumpForce = 5f;      // 最小跳躍力度
     public float maxJumpForce = 15f;     // 最大跳躍力度
@@ -100,6 +108,12 @@ public class PlayerMove : MonoBehaviour
         return rb.linearVelocity;
     }
     
+    // 獲取玩家是否在地面上，供動畫系統使用
+    public bool IsGrounded()
+    {
+        return isGrounded;
+    }
+    
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -155,27 +169,32 @@ public class PlayerMove : MonoBehaviour
         // 獲取輸入
         HandleInput();
         
+        // 蓄力跳躍（輸入檢測在 Update 中）
+        HandleChargeJump();
+    }
+    
+    void FixedUpdate()
+    {
+        // 物理相關操作在 FixedUpdate 中執行，確保 FPS 無關
         // 移動角色
         MovePlayer();
         
-        // 蓄力跳躍
-        HandleChargeJump();
-        
+        // 應用空中物理修正
         ApplyAirPhysicsModifiers();
     }
     
     void CheckGrounded()
     {
         // 使用射線檢測地面，針對capsule調整檢測距離
-        Vector3 rayStart = transform.position + Vector3.up * 0.05f; // capsule需要更小的偏移
+        Vector3 rayStart = groundCheck.position + Vector3.up * 0.05f; // capsule需要更小的偏移
         isGrounded = Physics.Raycast(rayStart, Vector3.down, 1.1f, groundMask); // 調整檢測距離
         
         // 額外的射線檢測，針對capsule形狀優化
         Vector3[] rayPositions = {
-            transform.position + new Vector3(groundCheckWidth * 0.7f, 0.05f, 0), // 縮小檢測範圍
-            transform.position + new Vector3(-groundCheckWidth * 0.7f, 0.05f, 0),
-            transform.position + new Vector3(0, 0.05f, groundCheckWidth * 0.7f),
-            transform.position + new Vector3(0, 0.05f, -groundCheckWidth * 0.7f)
+            groundCheck.position + new Vector3(groundCheckWidth * 0.7f, 0.05f, 0), // 縮小檢測範圍
+            groundCheck.position + new Vector3(-groundCheckWidth * 0.7f, 0.05f, 0),
+            groundCheck.position + new Vector3(0, 0.05f, groundCheckWidth * 0.7f),
+            groundCheck.position + new Vector3(0, 0.05f, -groundCheckWidth * 0.7f)
         };
         
         foreach (Vector3 pos in rayPositions)
@@ -224,17 +243,53 @@ public class PlayerMove : MonoBehaviour
             currentRotationSpeed *= highEnergyRotationMultiplier;
         }
         
-        // 應用移動速度
-        Vector3 move = moveDirection * currentMoveSpeed;
+        // 計算目標速度
+        Vector3 targetVelocity = moveDirection * currentMoveSpeed;
+        
+        // 獲取當前水平速度（X和Z軸）
+        Vector3 currentHorizontalVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        
+        // 根據是否啟用慣性來計算新速度
+        Vector3 newHorizontalVelocity;
+        
+        if (enableMoveInertia)
+        {
+            // 使用平滑加速度/減速度（使用 Time.fixedDeltaTime 確保 FPS 無關）
+            if (moveDirection.magnitude > 0.1f) // 有輸入
+            {
+                // 加速到目標速度
+                float acceleration = moveAcceleration > 0 ? moveAcceleration : float.MaxValue;
+                newHorizontalVelocity = Vector3.MoveTowards(
+                    currentHorizontalVelocity, 
+                    targetVelocity, 
+                    acceleration * Time.fixedDeltaTime
+                );
+            }
+            else // 沒有輸入，減速
+            {
+                // 減速到零
+                float deceleration = moveDeceleration > 0 ? moveDeceleration : float.MaxValue;
+                newHorizontalVelocity = Vector3.MoveTowards(
+                    currentHorizontalVelocity, 
+                    Vector3.zero, 
+                    deceleration * Time.fixedDeltaTime
+                );
+            }
+        }
+        else
+        {
+            // 無慣性模式：立即響應輸入
+            newHorizontalVelocity = targetVelocity;
+        }
         
         // 只影響X和Z軸，保持重力效果
-        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
+        rb.linearVelocity = new Vector3(newHorizontalVelocity.x, rb.linearVelocity.y, newHorizontalVelocity.z);
         
-        // 讓角色面向移動方向
+        // 讓角色面向移動方向（旋轉在 Update 中處理更平滑，但這裡也可以）
         if (moveDirection != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, currentRotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, currentRotationSpeed * Time.fixedDeltaTime);
         }
     }
     
@@ -334,9 +389,10 @@ public class PlayerMove : MonoBehaviour
             
             // 重置Y軸速度，確保跳躍高度一致
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            // 使用 Impulse 模式確保 FPS 無關（瞬間施加力）
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             hasJumpedSinceGrounded = true;
-            jumpStartTime = Time.time;
+            jumpStartTime = Time.time; // 修正：使用 Time.time 而不是 Time.deltaTime
             
             float chargeProgress = GetChargeProgress();
             bool usingCoyoteTime = !isGrounded && (Time.time - lastGroundedTime <= coyoteTime);
@@ -405,15 +461,19 @@ public class PlayerMove : MonoBehaviour
         
         Vector3 velocity = rb.linearVelocity;
         
+        // 使用 ForceMode.Acceleration 並在 FixedUpdate 中調用，確保 FPS 無關
+        // Acceleration 模式會自動考慮 Time.fixedDeltaTime
         if (enableExtraGravity)
         {
             if (velocity.y < 0f)
             {
+                // 下落時增加重力
                 float multiplier = Mathf.Max(1f, fallGravityMultiplier);
                 rb.AddForce(Vector3.up * Physics.gravity.y * (multiplier - 1f), ForceMode.Acceleration);
             }
             else if (!isJumpHeld && velocity.y > 0f)
             {
+                // 上升時（未按住跳躍鍵）增加重力，實現低跳躍
                 float multiplier = Mathf.Max(1f, lowJumpGravityMultiplier);
                 rb.AddForce(Vector3.up * Physics.gravity.y * (multiplier - 1f), ForceMode.Acceleration);
             }
@@ -423,12 +483,14 @@ public class PlayerMove : MonoBehaviour
         {
             if (Time.time - jumpStartTime >= maxHangTime)
             {
+                // 懸停時間過長後施加向下的力
                 rb.AddForce(Vector3.down * hangTimeDownForce, ForceMode.Acceleration);
             }
         }
         
         if (enableFallSpeedClamp)
         {
+            // 限制最大下落速度
             float maxDownSpeed = -Mathf.Abs(maxFallSpeed);
             if (velocity.y < maxDownSpeed)
             {
@@ -531,16 +593,16 @@ public class PlayerMove : MonoBehaviour
     {
         // 繪製主要檢測射線
         Gizmos.color = isGrounded ? Color.green : Color.red;
-        Vector3 rayStart = transform.position + Vector3.up * 0.05f;
+        Vector3 rayStart = groundCheck.position + Vector3.up * 0.05f;
         Gizmos.DrawRay(rayStart, Vector3.down * 1.1f);
         
         // 繪製額外的檢測射線（針對capsule優化）
         Gizmos.color = isGrounded ? Color.green : Color.yellow;
         Vector3[] rayPositions = {
-            transform.position + new Vector3(groundCheckWidth * 0.7f, 0.05f, 0),
-            transform.position + new Vector3(-groundCheckWidth * 0.7f, 0.05f, 0),
-            transform.position + new Vector3(0, 0.05f, groundCheckWidth * 0.7f),
-            transform.position + new Vector3(0, 0.05f, -groundCheckWidth * 0.7f)
+            groundCheck.position + new Vector3(groundCheckWidth * 0.7f, 0.05f, 0),
+            groundCheck.position + new Vector3(-groundCheckWidth * 0.7f, 0.05f, 0),
+            groundCheck.position + new Vector3(0, 0.05f, groundCheckWidth * 0.7f),
+            groundCheck.position + new Vector3(0, 0.05f, -groundCheckWidth * 0.7f)
         };
         
         foreach (Vector3 pos in rayPositions)
@@ -550,11 +612,11 @@ public class PlayerMove : MonoBehaviour
         
         // 繪製capsule形狀的檢測範圍
         Gizmos.color = Color.blue;
-        Vector3 capsuleCenter = transform.position + Vector3.down * 0.25f;
+        Vector3 capsuleCenter = groundCheck.position + Vector3.down * 0.25f;
         Gizmos.DrawWireCube(capsuleCenter, new Vector3(groundCheckWidth * 1.4f, groundCheckHeight, groundCheckWidth * 1.4f));
         
         // 額外繪製capsule的圓柱形邊界
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position + Vector3.down * 0.5f, groundCheckWidth * 0.7f);
+        Gizmos.DrawWireSphere(groundCheck.position + Vector3.down * 0.5f, groundCheckWidth * 0.7f);
     }
 }
