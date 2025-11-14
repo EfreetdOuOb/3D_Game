@@ -1198,7 +1198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Composition:
-    ScreenPosition: {x: 0, y: 0.39}
+    ScreenPosition: {x: 0, y: 0.09}
     DeadZone:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
@@ -1237,15 +1237,15 @@ MonoBehaviour:
   Radius: 5
   Orbits:
     Top:
-      Radius: 2
-      Height: 5
+      Radius: 1.64
+      Height: 3.2
     Center:
-      Radius: 4
-      Height: 3
+      Radius: 2.81
+      Height: 1.6
     Bottom:
-      Radius: 2.5
-      Height: 0
-    SplineCurvature: 0.5
+      Radius: 1.78
+      Height: -1.21
+    SplineCurvature: 0
   RecenteringTarget: 2
   HorizontalAxis:
     Value: 0
@@ -1258,9 +1258,9 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 14.8
-    Center: 35.7
-    Range: {x: -8.56, y: 45}
+    Value: 245.6
+    Center: 248.5
+    Range: {x: 243.3, y: 248.5}
     Wrap: 0
     Recentering:
       Enabled: 0
@@ -1297,7 +1297,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 0}
+    TrackingTarget: {fileID: 5730389259591542075}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -1328,8 +1328,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 530992505}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.05566601, y: -0.000000015109627, z: 8.423988e-10, w: 0.9984495}
-  m_LocalPosition: {x: -18.574492, y: -4.3693123, z: -43.66517}
+  m_LocalRotation: {x: 0.16000782, y: -5.4410564e-16, z: -2.8872685e-16, w: 0.9871158}
+  m_LocalPosition: {x: -18.65, y: -4.100469, z: -41.2024}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7360,6 +7360,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1905371681836640913, guid: 0753cdaa9de6e2c4d9ad31a4055b05a9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1905371681836640913, guid: 0753cdaa9de6e2c4d9ad31a4055b05a9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1905371681836640913, guid: 0753cdaa9de6e2c4d9ad31a4055b05a9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1905371681836640913, guid: 0753cdaa9de6e2c4d9ad31a4055b05a9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1905371681836640913, guid: 0753cdaa9de6e2c4d9ad31a4055b05a9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1905371681836640913, guid: 0753cdaa9de6e2c4d9ad31a4055b05a9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1905371681836640913, guid: 0753cdaa9de6e2c4d9ad31a4055b05a9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5017168302895204586, guid: 0753cdaa9de6e2c4d9ad31a4055b05a9, type: 3}
       propertyPath: m_Name
       value: Player
@@ -7484,7 +7512,7 @@ MonoBehaviour:
   maxHangTime: 0.35
   hangTimeDownForce: 25
   enableFallSpeedClamp: 1
-  maxFallSpeed: 35
+  maxFallSpeed: 40
   maxEnergy: 200
   energyConsumptionRate: 15
   minEnergyThreshold: 15
@@ -7512,9 +7540,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1.357453
-  m_Height: 4.706344
+  m_Height: 4.670835
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1.1499944, z: 0}
 --- !u!54 &5730389259591542073
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7564,6 +7592,11 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!4 &5730389259591542075 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5686743759519961680, guid: 0753cdaa9de6e2c4d9ad31a4055b05a9, type: 3}
+  m_PrefabInstance: {fileID: 5730389259591542068}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
