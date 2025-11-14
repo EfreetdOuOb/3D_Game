@@ -454,6 +454,7 @@ public class PlayerMove : MonoBehaviour
             return;
         }
         
+        // 使用更嚴格的條件判斷是否在空中（避免邊界情況）
         if (isGrounded)
         {
             return;
@@ -465,13 +466,14 @@ public class PlayerMove : MonoBehaviour
         // Acceleration 模式會自動考慮 Time.fixedDeltaTime
         if (enableExtraGravity)
         {
-            if (velocity.y < 0f)
+            // 改進條件判斷：使用更寬鬆的閾值，確保下墜重力穩定應用
+            if (velocity.y <= 0.1f) // 改為 <= 0.1f，包括接近 0 的情況
             {
-                // 下落時增加重力
+                // 下落時或接近下落時增加重力（確保下墜效果穩定）
                 float multiplier = Mathf.Max(1f, fallGravityMultiplier);
                 rb.AddForce(Vector3.up * Physics.gravity.y * (multiplier - 1f), ForceMode.Acceleration);
             }
-            else if (!isJumpHeld && velocity.y > 0f)
+            else if (!isJumpHeld && velocity.y > 0.1f)
             {
                 // 上升時（未按住跳躍鍵）增加重力，實現低跳躍
                 float multiplier = Mathf.Max(1f, lowJumpGravityMultiplier);
@@ -481,7 +483,7 @@ public class PlayerMove : MonoBehaviour
         
         if (enableHangTimeCut && hasJumpedSinceGrounded && velocity.y > 0f)
         {
-            if (Time.time - jumpStartTime >= maxHangTime)
+            if (jumpStartTime >= 0f && Time.time - jumpStartTime >= maxHangTime)
             {
                 // 懸停時間過長後施加向下的力
                 rb.AddForce(Vector3.down * hangTimeDownForce, ForceMode.Acceleration);

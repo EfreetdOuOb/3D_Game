@@ -14,6 +14,8 @@ public class WalkState : CharacterState
         {
             stateMachine.SetAnimatorBool("IsRunning", true);
             stateMachine.SetAnimatorBool("IsJumping", false);
+            // 直接播放 walk 動畫，強制立即切換（不等待當前動畫播放完）
+            stateMachine.PlayAnimation("骨架|walk_cycle", 0.05f);
         }
     }
     

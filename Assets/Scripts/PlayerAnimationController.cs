@@ -18,8 +18,17 @@ public class PlayerAnimationController : MonoBehaviour
     [Tooltip("檢測地面狀態的延遲（避免頻繁切換）")]
     public float groundCheckDelay = 0.1f;
     
+    [Tooltip("狀態切換的最小時間間隔（避免頻繁切換）")]
+    public float stateChangeCooldown = 0.1f;
+    
+    [Tooltip("使用移動方向而不是速度來判斷是否移動（更穩定）")]
+    public bool useMoveDirectionForWalk = true;
+    
     private float lastGroundCheckTime;
     private bool wasGrounded;
+    private float lastStateChangeTime;
+    private CharacterStateMachine.StateType lastStateType;
+    private bool wasCharging = false; // 記錄上一幀是否在蓄力
     
     void Start()
     {
@@ -39,6 +48,8 @@ public class PlayerAnimationController : MonoBehaviour
         
         // 初始化狀態
         wasGrounded = true;
+        lastStateChangeTime = 0f;
+        lastStateType = CharacterStateMachine.StateType.Idle;
     }
     
     void Update()
@@ -85,14 +96,24 @@ public class PlayerAnimationController : MonoBehaviour
     /// </summary>
     private void UpdateAnimationState(Vector3 moveDirection, float horizontalSpeed, bool isGrounded, bool isCharging)
     {
-        CharacterStateMachine.StateType targetState = stateMachine.GetCurrentStateType();
-        
-        // 如果正在蓄力跳躍，保持當前狀態（或可以添加蓄力動畫）
+        // 如果正在蓄力跳躍，完全鎖定當前狀態，不進行任何切換或計算
         if (isCharging)
         {
-            // 可以選擇保持當前狀態或添加新的蓄力狀態
+            // 記錄蓄力狀態，確保在蓄力期間不會切換動畫
+            wasCharging = true;
+            // 完全返回，不進行任何狀態計算或切換
             return;
         }
+        
+        // 如果剛從蓄力狀態退出，重置標記
+        if (wasCharging && !isCharging)
+        {
+            wasCharging = false;
+            // 重置狀態切換時間，允許立即切換到正確的狀態
+            lastStateChangeTime = 0f;
+        }
+        
+        CharacterStateMachine.StateType targetState = stateMachine.GetCurrentStateType();
         
         // 獲取當前速度（用於判斷跳躍/下落）
         Vector3 currentVelocity = playerMove.GetCurrentVelocity();
@@ -115,7 +136,21 @@ public class PlayerAnimationController : MonoBehaviour
         else
         {
             // 在地面上
-            if (horizontalSpeed > moveSpeedThreshold)
+            bool isMoving = false;
+            
+            if (useMoveDirectionForWalk)
+            {
+                // 使用移動方向判斷（更穩定，避免速度波動導致抽搐）
+                // 如果有輸入方向，就視為移動
+                isMoving = moveDirection.magnitude > 0.1f;
+            }
+            else
+            {
+                // 使用速度判斷（傳統方式）
+                isMoving = horizontalSpeed > moveSpeedThreshold;
+            }
+            
+            if (isMoving)
             {
                 // 正在移動
                 targetState = CharacterStateMachine.StateType.Walk;
@@ -127,10 +162,36 @@ public class PlayerAnimationController : MonoBehaviour
             }
         }
         
-        // 如果狀態需要改變，則切換狀態
-        if (stateMachine.GetCurrentStateType() != targetState)
+        // 檢查是否需要切換狀態
+        CharacterStateMachine.StateType currentStateType = stateMachine.GetCurrentStateType();
+        
+        // 如果狀態需要改變
+        if (currentStateType != targetState)
         {
-            stateMachine.ChangeState(targetState);
+            // 檢查冷卻時間（避免頻繁切換）
+            float timeSinceLastChange = Time.time - lastStateChangeTime;
+            
+            // 對於某些狀態（如空中狀態），允許立即切換
+            bool isAirState = targetState == CharacterStateMachine.StateType.Jump || 
+                             targetState == CharacterStateMachine.StateType.Fall;
+            bool isAirToGround = (currentStateType == CharacterStateMachine.StateType.Jump || 
+                                 currentStateType == CharacterStateMachine.StateType.Fall) &&
+                                 (targetState == CharacterStateMachine.StateType.Idle || 
+                                 targetState == CharacterStateMachine.StateType.Walk);
+            
+            // 如果超過冷卻時間，或者是空中狀態切換，或者是從空中到地面，則允許切換
+            // 但必須確保不在蓄力狀態（這個檢查已經在上面做了，這裡是雙重保險）
+            if ((timeSinceLastChange >= stateChangeCooldown || isAirState || isAirToGround) && !isCharging)
+            {
+                stateMachine.ChangeState(targetState);
+                lastStateChangeTime = Time.time;
+                lastStateType = targetState;
+            }
+        }
+        else
+        {
+            // 狀態沒有改變，更新記錄
+            lastStateType = currentStateType;
         }
     }
 }

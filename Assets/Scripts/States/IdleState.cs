@@ -14,6 +14,8 @@ public class IdleState : CharacterState
         {
             stateMachine.SetAnimatorBool("IsRunning", false);
             stateMachine.SetAnimatorBool("IsJumping", false);
+            // 直接播放 idle 動畫，強制立即切換（不等待當前動畫播放完）
+            stateMachine.PlayAnimation("骨架|idle", 0.05f);
         }
     }
     

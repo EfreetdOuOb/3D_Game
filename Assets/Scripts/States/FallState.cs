@@ -13,6 +13,9 @@ public class FallState : CharacterState
         if (animator != null)
         {
             stateMachine.SetAnimatorBool("IsJumping", true);
+            // Fall 狀態也使用 Jump 動畫（或可以添加專門的 Fall 動畫）
+            // 直接播放動畫，強制立即切換（不等待當前動畫播放完）
+            stateMachine.PlayAnimation("骨架|Jump", 0.05f);
         }
     }
     
