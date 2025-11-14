@@ -136,6 +136,14 @@ public class UIManager : MonoBehaviour
 		}
 	}
 
+	public void OnRestartGameButton()
+	{
+		if (GameManager.Instance != null)
+		{
+			GameManager.Instance.RestartGame();
+		}
+	}
+
 	// 關閉設定（返回上一頁：標題主選單或暫停面板）
 	public void OnCloseSettingsButton()
 	{

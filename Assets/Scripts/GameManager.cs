@@ -129,6 +129,45 @@ public class GameManager : MonoBehaviour
 		StartCoroutine(ApplyGameplayCursorNextFrame());
 	}
 
+	// 重新開始遊戲：重新載入當前遊戲場景（可直接綁定到按鈕）
+	public void RestartGame()
+	{
+		// 獲取當前場景名稱
+		string currentSceneName = SceneManager.GetActiveScene().name;
+		
+		// 如果當前在標題場景，則載入遊戲場景
+		if (currentSceneName == titleSceneName)
+		{
+			StartGame();
+			return;
+		}
+
+		// 重置所有遊戲狀態
+		Time.timeScale = 1f;
+		AudioListener.pause = false;
+		IsPaused = false;
+		IsInSettings = false;
+		settingsOpenedFromPause = false;
+
+		// 清除任何已選取的 UI
+		if (EventSystem.current != null)
+		{
+			EventSystem.current.SetSelectedGameObject(null);
+		}
+
+		// 觸發事件通知狀態重置
+		OnPauseChanged?.Invoke(false);
+		OnSettingsToggled?.Invoke(false);
+
+		// 重新載入當前場景
+		SceneManager.LoadScene(currentSceneName);
+
+		// 進入遊戲時隱藏游標（若你的遊戲需要顯示游標，可移除此段）
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+		StartCoroutine(ApplyGameplayCursorNextFrame());
+	}
+
 	// 開啟設定：只切換狀態並廣播，由 UI 來顯示設定面板
 	public void OpenSettings()
 	{

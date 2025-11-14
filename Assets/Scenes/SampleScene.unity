@@ -3316,89 +3316,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 433498004}
     m_Modifications:
     - target: {fileID: 862764982837826505, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 862764982837826505, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 862764982837826505, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 433498005}
-    - target: {fileID: 862764982837826505, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 862764982837826505, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnReturnToTitleButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 862764982837826505, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UIManager, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 862764982837826505, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 3798296168836968167, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3798296168836968167, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3798296168836968167, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 433498005}
     - target: {fileID: 3798296168836968167, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3798296168836968167, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnOpenSettingsButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 3798296168836968167, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UIManager, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3798296168836968167, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 6726763886207485434, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6726763886207485434, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6726763886207485434, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 433498005}
     - target: {fileID: 6726763886207485434, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6726763886207485434, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnResumeButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 6726763886207485434, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UIManager, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 6726763886207485434, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 433498005}
     - target: {fileID: 7423518021781672606, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
       propertyPath: m_Name
       value: UIGamePausePanel
@@ -3486,6 +3414,14 @@ PrefabInstance:
     - target: {fileID: 8612153925752128396, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8800101599759652759, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 433498005}
+    - target: {fileID: 8800101599759652759, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnRestartGameButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
