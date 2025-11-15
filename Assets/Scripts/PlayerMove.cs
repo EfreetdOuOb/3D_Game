@@ -2,6 +2,13 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
+
+    private Rigidbody rb;
+    private Animator animator;
+    private bool isGrounded;
+    private Vector3 moveDirection;
+    private BaseState current_state;
+
     [Header("移動設定")]
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
@@ -36,9 +43,7 @@ public class PlayerMove : MonoBehaviour
     [Header("攝像機")]
     public Camera playerCamera;
     
-    private Rigidbody rb;
-    private bool isGrounded;
-    private Vector3 moveDirection;
+    
     
     [Header("蓄力狀態")]
     private bool isCharging = false;
@@ -117,11 +122,16 @@ public class PlayerMove : MonoBehaviour
     {
         return isGrounded;
     }
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>();
+    }
     
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
         
+        SetCurrentState(new Idle(this));
         // 初始化能量
         currentEnergy = maxEnergy;
         
@@ -161,6 +171,7 @@ public class PlayerMove : MonoBehaviour
     
     void Update()
     {
+        current_state.Update();
         // 檢測是否在地面上
         CheckGrounded();
         
@@ -179,6 +190,7 @@ public class PlayerMove : MonoBehaviour
     
     void FixedUpdate()
     {
+        current_state.FixedUpdate();
         // 物理相關操作在 FixedUpdate 中執行，確保 FPS 無關
         // 移動角色
         MovePlayer();
@@ -187,7 +199,7 @@ public class PlayerMove : MonoBehaviour
         ApplyAirPhysicsModifiers();
     }
     
-    void CheckGrounded()
+    public void CheckGrounded()
     {
         // 使用射線檢測地面，針對capsule調整檢測距離
         Vector3 rayStart = groundCheck.position + Vector3.up * 0.05f; // capsule需要更小的偏移
@@ -211,7 +223,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
     
-    void HandleInput()
+    public void HandleInput()
     {
         // 獲取WASD輸入
         float horizontal = Input.GetAxis("Horizontal"); // A/D 或 左/右箭頭
@@ -235,7 +247,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
     
-    void MovePlayer()
+    public void MovePlayer()
     {
         // 計算移動速度（高能模式下增強）
         float currentMoveSpeed = moveSpeed;
@@ -298,8 +310,12 @@ public class PlayerMove : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, currentRotationSpeed * Time.fixedDeltaTime);
         }
     }
+    public bool IsMoving()
+    {
+        return moveDirection.magnitude > 0.1f;
+    }
     
-    void HandleChargeJump()
+    public void HandleChargeJump()
     {
         bool jumpDown = Input.GetButtonDown("Jump");
         bool jumpHeld = Input.GetButton("Jump");
@@ -420,7 +436,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
     
-    void UpdateCoyoteTime()
+    public void UpdateCoyoteTime()
     {
         // 記錄地面狀態變化
         if (isGrounded)
@@ -453,7 +469,7 @@ public class PlayerMove : MonoBehaviour
         return false;
     }
     
-    void ApplyAirPhysicsModifiers()
+    public void ApplyAirPhysicsModifiers()
     {
         if (rb == null)
         {
@@ -508,7 +524,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
     
-    void HandleHighEnergyMode()
+    public void HandleHighEnergyMode()
     {
         // 檢測右鍵輸入（Fire2 對應滑鼠右鍵或 Alt 鍵）
         if (Input.GetButtonDown("Fire2"))
@@ -595,6 +611,14 @@ public class PlayerMove : MonoBehaviour
     {
         return maxEnergy;
     }
+
+    //播放角色動畫
+    public void PlayAnimation(string animationName)
+    {
+        animator.Play(animationName);
+    }
+
+    
     
     // 在Scene視圖中顯示地面檢測範圍
     void OnDrawGizmosSelected()
@@ -626,5 +650,11 @@ public class PlayerMove : MonoBehaviour
         // 額外繪製capsule的圓柱形邊界
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(groundCheck.position + Vector3.down * 0.5f, groundCheckWidth * 0.7f);
+    }
+
+    //切換當前狀態
+    public void SetCurrentState(BaseState state)
+    {
+        current_state = state;
     }
 }
