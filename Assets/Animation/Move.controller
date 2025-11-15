@@ -216,7 +216,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: New Animator Controller
+  m_Name: Move
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: IsRunning
@@ -382,10 +382,10 @@ AnimatorStateMachine:
     m_Position: {x: 190, y: 480, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7773968224309572847}
-    m_Position: {x: 190, y: 320, z: 0}
+    m_Position: {x: 250, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8780443178545901836}
-    m_Position: {x: 570, y: 320, z: 0}
+    m_Position: {x: 660, y: 330, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []

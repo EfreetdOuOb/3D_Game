@@ -30,6 +30,18 @@ public class PlayerAnimationController : MonoBehaviour
     private CharacterStateMachine.StateType lastStateType;
     private bool wasCharging = false; // 記錄上一幀是否在蓄力
     
+    [Header("轉向動畫設定")]
+    [Tooltip("轉向角度閾值（度），超過此角度才觸發轉向動畫")]
+    public float turnAngleThreshold = 45f;
+    
+    [Tooltip("轉向動畫持續時間（秒）")]
+    public float turnAnimationDuration = 0.3f;
+    
+    private Vector3 lastForwardDirection; // 上一幀的朝向
+    private float turnAnimationTimer = 0f; // 轉向動畫計時器
+    private bool isInTurnAnimation = false; // 是否正在播放轉向動畫
+    private CharacterStateMachine.StateType turnDirection = CharacterStateMachine.StateType.Walk; // 轉向方向
+    
     void Start()
     {
         // 獲取組件
@@ -50,6 +62,7 @@ public class PlayerAnimationController : MonoBehaviour
         wasGrounded = true;
         lastStateChangeTime = 0f;
         lastStateType = CharacterStateMachine.StateType.Idle;
+        lastForwardDirection = transform.forward;
     }
     
     void Update()
@@ -68,14 +81,37 @@ public class PlayerAnimationController : MonoBehaviour
         // 計算水平移動速度
         float horizontalSpeed = new Vector3(velocity.x, 0, velocity.z).magnitude;
         
+        // 更新蓄力動畫參數
+        if (stateMachine != null && stateMachine.animator != null)
+        {
+            stateMachine.SetAnimatorBool("IsCharging", isCharging);
+        }
+        
+        // 處理轉向動畫（只有在非蓄力狀態下才處理）
+        if (!isCharging)
+        {
+            HandleTurnAnimation(moveDirection, isGrounded);
+        }
+        
         // 根據玩家狀態切換動畫狀態
         UpdateAnimationState(moveDirection, horizontalSpeed, isGrounded, isCharging);
         
         // 更新地面狀態記錄
         if (Time.time - lastGroundCheckTime > groundCheckDelay)
         {
+            // 檢測落地事件
+            if (!wasGrounded && isGrounded)
+            {
+                OnLanding();
+            }
             wasGrounded = isGrounded;
             lastGroundCheckTime = Time.time;
+        }
+        
+        // 更新朝向記錄
+        if (moveDirection.magnitude > 0.1f)
+        {
+            lastForwardDirection = moveDirection.normalized;
         }
     }
     
@@ -117,6 +153,26 @@ public class PlayerAnimationController : MonoBehaviour
         
         // 獲取當前速度（用於判斷跳躍/下落）
         Vector3 currentVelocity = playerMove.GetCurrentVelocity();
+        
+        // 如果正在播放轉向動畫，不進行狀態切換（讓轉向動畫完成）
+        if (isInTurnAnimation)
+        {
+            return; // 轉向動畫期間不切換狀態
+        }
+        
+        // 檢查是否正在播放落地動畫
+        if (stateMachine != null && stateMachine.animator != null)
+        {
+            AnimatorStateInfo stateInfo = stateMachine.animator.GetCurrentAnimatorStateInfo(0);
+            if (stateInfo.IsName("骨架|land"))
+            {
+                // 如果落地動畫還沒播放完成，不進行狀態切換
+                if (stateInfo.normalizedTime < 0.95f)
+                {
+                    return;
+                }
+            }
+        }
         
         // 根據是否在地面來決定狀態
         if (!isGrounded)
@@ -192,6 +248,73 @@ public class PlayerAnimationController : MonoBehaviour
         {
             // 狀態沒有改變，更新記錄
             lastStateType = currentStateType;
+        }
+    }
+    
+    /// <summary>
+    /// 處理轉向動畫
+    /// </summary>
+    private void HandleTurnAnimation(Vector3 moveDirection, bool isGrounded)
+    {
+        // 如果正在播放轉向動畫，更新計時器
+        if (isInTurnAnimation)
+        {
+            turnAnimationTimer -= Time.deltaTime;
+            if (turnAnimationTimer <= 0f)
+            {
+                isInTurnAnimation = false;
+            }
+            return; // 轉向動畫播放期間不檢測新的轉向
+        }
+        
+        // 只有在移動且在地面上時才檢測轉向
+        if (!isGrounded || moveDirection.magnitude < 0.1f)
+        {
+            return;
+        }
+        
+        // 計算當前朝向和上一幀朝向的角度差
+        Vector3 currentForward = moveDirection.normalized;
+        float angle = Vector3.SignedAngle(lastForwardDirection, currentForward, Vector3.up);
+        
+        // 如果角度變化超過閾值，觸發轉向動畫
+        if (Mathf.Abs(angle) > turnAngleThreshold)
+        {
+            // 確定轉向方向
+            if (angle > 0)
+            {
+                // 右轉
+                turnDirection = CharacterStateMachine.StateType.TurnRight;
+            }
+            else
+            {
+                // 左轉
+                turnDirection = CharacterStateMachine.StateType.TurnLeft;
+            }
+            
+            // 觸發轉向動畫
+            isInTurnAnimation = true;
+            turnAnimationTimer = turnAnimationDuration;
+            stateMachine.ChangeState(turnDirection);
+        }
+    }
+    
+    /// <summary>
+    /// 落地事件處理
+    /// </summary>
+    private void OnLanding()
+    {
+        // 如果從空中落地，觸發落地動畫
+        CharacterStateMachine.StateType currentState = stateMachine.GetCurrentStateType();
+        if (currentState == CharacterStateMachine.StateType.Jump || 
+            currentState == CharacterStateMachine.StateType.Fall)
+        {
+            // 使用 Animator 直接播放落地動畫
+            if (stateMachine.animator != null)
+            {
+                // 直接播放落地動畫，落地動畫播放完成後會自動根據移動狀態切換
+                stateMachine.PlayAnimation("骨架|land", 0.15f);
+            }
         }
     }
 }
