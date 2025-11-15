@@ -1237,13 +1237,13 @@ MonoBehaviour:
   Radius: 5
   Orbits:
     Top:
-      Radius: 1.64
+      Radius: 0.32
       Height: 3.2
     Center:
-      Radius: 3.96
-      Height: 1.6
+      Radius: 5.16
+      Height: 2.2
     Bottom:
-      Radius: 1.78
+      Radius: 0.29
       Height: -1.21
     SplineCurvature: 0
   RecenteringTarget: 2
@@ -1328,8 +1328,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 530992505}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.19528598, y: -0.000000014614262, z: 0.0000000029099883, w: 0.9807464}
-  m_LocalPosition: {x: -18.65, y: -3.3113434, z: -42.168045}
+  m_LocalRotation: {x: 0.19459224, y: -0.000000025985113, z: 0.0000000051550435, w: 0.98088425}
+  m_LocalPosition: {x: -18.65, y: -2.7606406, z: -43.174767}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
