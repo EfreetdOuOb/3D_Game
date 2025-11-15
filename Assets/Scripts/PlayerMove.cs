@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
@@ -650,6 +651,14 @@ public class PlayerMove : MonoBehaviour
         // 額外繪製capsule的圓柱形邊界
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(groundCheck.position + Vector3.down * 0.5f, groundCheckWidth * 0.7f);
+    }
+
+
+    //判斷動畫是否播放完畢(一次)
+    public bool IsAnimationCompleted(string _aniName)
+    {
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        return (stateInfo.IsName(_aniName)&&stateInfo.normalizedTime >=1.0);
     }
 
     //切換當前狀態

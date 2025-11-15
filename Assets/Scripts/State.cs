@@ -55,7 +55,33 @@ public class Move : BaseState
         //移動狀態
         if(!playerMove.IsMoving())
         {
-            //切換到idle狀態
+            //切換到MoveToIdle狀態
+            playerMove.SetCurrentState(new MoveToIdle(playerMove));
+        }
+        
+
+        
+    }
+    //處理人物運動
+    public override void FixedUpdate()
+    {
+        //playerMove.MovePlayer();
+        //playerMove.ApplyAirPhysicsModifiers();
+    }
+}
+public class MoveToIdle : BaseState
+{
+    //構造函數，類在被實例化時的初始化方法，執行一次
+    public MoveToIdle(PlayerMove _playerMove) : base(_playerMove)
+    {
+        //播放動畫
+        playerMove.PlayAnimation("MoveToIdle");
+    }
+    //處理每幀邏輯
+    public override void Update()
+    {
+        if(playerMove.IsAnimationCompleted("MoveToIdle"))
+        {
             playerMove.SetCurrentState(new Idle(playerMove));
         }
         
