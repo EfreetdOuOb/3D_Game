@@ -6,6 +6,10 @@ public class PlayerMove : MonoBehaviour
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
     
+    [Header("模型朝向設定")]
+    [Tooltip("模型朝向偏移（度），用於修正模型的forward方向。例如：如果模型面向右側，設置為90；如果面向後方，設置為180")]
+    public float modelForwardOffset = 0f;
+    
     [Header("移動慣性設定")]
     [Tooltip("移動加速度（0 = 無慣性，立即響應；值越大慣性越強）")]
     public float moveAcceleration = 20f;
@@ -288,7 +292,9 @@ public class PlayerMove : MonoBehaviour
         // 讓角色面向移動方向（旋轉在 Update 中處理更平滑，但這裡也可以）
         if (moveDirection != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            // 應用模型朝向偏移
+            Quaternion offsetRotation = Quaternion.Euler(0, modelForwardOffset, 0);
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection) * offsetRotation;
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, currentRotationSpeed * Time.fixedDeltaTime);
         }
     }

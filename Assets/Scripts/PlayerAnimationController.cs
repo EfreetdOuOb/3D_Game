@@ -42,6 +42,13 @@ public class PlayerAnimationController : MonoBehaviour
     private bool isInTurnAnimation = false; // 是否正在播放轉向動畫
     private CharacterStateMachine.StateType turnDirection = CharacterStateMachine.StateType.Walk; // 轉向方向
     
+    [Header("落地動畫設定")]
+    [Tooltip("是否正在播放落地動畫")]
+    private bool isInLandingAnimation = false; // 是否正在播放落地動畫
+    private float landingAnimationTimer = 0f; // 落地動畫計時器
+    [Tooltip("落地動畫持續時間（秒），用於防止狀態切換過早）")]
+    public float landingAnimationDuration = 0.5f; // 落地動畫持續時間
+    
     void Start()
     {
         // 獲取組件
@@ -108,6 +115,16 @@ public class PlayerAnimationController : MonoBehaviour
             lastGroundCheckTime = Time.time;
         }
         
+        // 更新落地動畫計時器
+        if (isInLandingAnimation)
+        {
+            landingAnimationTimer -= Time.deltaTime;
+            if (landingAnimationTimer <= 0f)
+            {
+                isInLandingAnimation = false;
+            }
+        }
+        
         // 更新朝向記錄
         if (moveDirection.magnitude > 0.1f)
         {
@@ -132,8 +149,38 @@ public class PlayerAnimationController : MonoBehaviour
     /// </summary>
     private void UpdateAnimationState(Vector3 moveDirection, float horizontalSpeed, bool isGrounded, bool isCharging)
     {
-        // 如果正在蓄力跳躍，完全鎖定當前狀態，不進行任何切換或計算
-        if (isCharging)
+        // 如果正在播放落地動畫，優先處理落地動畫，不允許其他狀態切換
+        if (isInLandingAnimation)
+        {
+            // 檢查落地動畫是否播放完成
+            if (stateMachine != null && stateMachine.animator != null)
+            {
+                AnimatorStateInfo stateInfo = stateMachine.animator.GetCurrentAnimatorStateInfo(0);
+                if (stateInfo.IsName("骨架|land"))
+                {
+                    // 如果落地動畫還沒播放完成，不進行狀態切換
+                    if (stateInfo.normalizedTime < 0.95f)
+                    {
+                        return; // 落地動畫期間，完全阻止狀態切換
+                    }
+                    else
+                    {
+                        // 落地動畫即將完成，清除標記，允許狀態切換
+                        isInLandingAnimation = false;
+                        
+                        // 恢復蓄力參數（如果玩家還在蓄力的話）
+                        // 這樣落地動畫完成後，如果還在蓄力，會自動切換到蓄力動畫
+                        if (playerMove != null && playerMove.IsCharging())
+                        {
+                            stateMachine.SetAnimatorBool("IsCharging", true);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 如果正在蓄力跳躍，但在落地動畫期間不允許切換到蓄力狀態
+        if (isCharging && !isInLandingAnimation)
         {
             // 記錄蓄力狀態，確保在蓄力期間不會切換動畫
             wasCharging = true;
@@ -158,20 +205,6 @@ public class PlayerAnimationController : MonoBehaviour
         if (isInTurnAnimation)
         {
             return; // 轉向動畫期間不切換狀態
-        }
-        
-        // 檢查是否正在播放落地動畫
-        if (stateMachine != null && stateMachine.animator != null)
-        {
-            AnimatorStateInfo stateInfo = stateMachine.animator.GetCurrentAnimatorStateInfo(0);
-            if (stateInfo.IsName("骨架|land"))
-            {
-                // 如果落地動畫還沒播放完成，不進行狀態切換
-                if (stateInfo.normalizedTime < 0.95f)
-                {
-                    return;
-                }
-            }
         }
         
         // 根據是否在地面來決定狀態
@@ -312,6 +345,18 @@ public class PlayerAnimationController : MonoBehaviour
             // 使用 Animator 直接播放落地動畫
             if (stateMachine.animator != null)
             {
+                // 標記正在播放落地動畫
+                isInLandingAnimation = true;
+                landingAnimationTimer = landingAnimationDuration;
+                
+                // 暫時禁用蓄力參數，確保落地動畫優先播放
+                // 落地動畫完成後，如果還在蓄力，會自動恢復
+                if (playerMove != null && playerMove.IsCharging())
+                {
+                    // 暫時清除 IsCharging 參數，防止落地動畫被蓄力動畫打斷
+                    stateMachine.SetAnimatorBool("IsCharging", false);
+                }
+                
                 // 直接播放落地動畫，落地動畫播放完成後會自動根據移動狀態切換
                 stateMachine.PlayAnimation("骨架|land", 0.15f);
             }

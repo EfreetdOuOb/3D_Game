@@ -29,19 +29,22 @@ public class JumpState : CharacterState
     public override void OnUpdate()
     {
         // 跳躍狀態的更新邏輯
-        // 如果動畫已經播放過，確保不會重複播放
-        if (animator != null && hasPlayedAnimation && !hasStoppedAtEnd)
+        // 確保動畫停留在最後一幀，防止重複播放
+        if (animator != null && hasPlayedAnimation)
         {
-            // 檢查動畫是否還在播放
-            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            if (stateInfo.IsName("骨架|Jump"))
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsName("骨架|Jump"))
             {
-                // 如果動畫已經播放完成（normalizedTime >= 1），確保停留在最後一幀
-                if (stateInfo.normalizedTime >= 1f)
+            // 只做一次卡最後一幀
+            if (!hasStoppedAtEnd && stateInfo.normalizedTime >= 1f)
                 {
-                    // 只設置一次，讓動畫停留在最後一幀，防止循環
-                    animator.Play("骨架|Jump", 0, 1f);
-                    hasStoppedAtEnd = true;
+                animator.Play("骨架|Jump", 0, 1f);
+                animator.speed = 0f;
+                hasStoppedAtEnd = true;
+                }
+            else if (!hasStoppedAtEnd && stateInfo.normalizedTime >= 0.95f)
+                {
+                animator.speed = 0.1f;
                 }
             }
         }
@@ -52,6 +55,8 @@ public class JumpState : CharacterState
         // 退出跳躍狀態時的清理工作
         if (animator != null)
         {
+            // 恢復動畫速度
+            animator.speed = 1f;
             stateMachine.SetAnimatorBool("IsJumping", false);
             hasPlayedAnimation = false;
             hasStoppedAtEnd = false;

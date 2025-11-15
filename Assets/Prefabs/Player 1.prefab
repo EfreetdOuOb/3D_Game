@@ -261,19 +261,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6435541481434522312, guid: 56581961cae9452439904c30d6be4760, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 6435541481434522312, guid: 56581961cae9452439904c30d6be4760, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 6435541481434522312, guid: 56581961cae9452439904c30d6be4760, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6435541481434522312, guid: 56581961cae9452439904c30d6be4760, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6435541481434522312, guid: 56581961cae9452439904c30d6be4760, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -281,7 +281,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6435541481434522312, guid: 56581961cae9452439904c30d6be4760, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 180
+      value: 360
       objectReference: {fileID: 0}
     - target: {fileID: 6944097979284640450, guid: 56581961cae9452439904c30d6be4760, type: 3}
       propertyPath: m_Layer
@@ -413,6 +413,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   rotationSpeed: 5
+  modelForwardOffset: 0
   moveAcceleration: 20
   moveDeceleration: 25
   enableMoveInertia: 0
