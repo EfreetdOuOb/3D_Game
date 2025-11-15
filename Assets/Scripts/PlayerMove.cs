@@ -315,6 +315,14 @@ public class PlayerMove : MonoBehaviour
     {
         return moveDirection.magnitude > 0.1f;
     }
+    public bool PressedJumpKey()
+    {
+        return Input.GetButtonDown("Jump");
+    }
+    public bool ReleaseJumpKey()
+    {
+        return Input.GetButtonUp("Jump");
+    }
     
     public void HandleChargeJump()
     {

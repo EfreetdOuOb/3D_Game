@@ -89,7 +89,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: "\u9AA8\u67B6|charge"
+      name: Charging
       takeName: "\u9AA8\u67B6|charge"
       internalID: -2526360999247486121
       firstFrame: 0
