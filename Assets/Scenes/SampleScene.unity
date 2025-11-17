@@ -2753,7 +2753,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Composition:
-    ScreenPosition: {x: 0, y: 0.09}
+    ScreenPosition: {x: 0.007986963, y: 0.2282722}
     DeadZone:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
@@ -2800,7 +2800,7 @@ MonoBehaviour:
     Bottom:
       Radius: 0.29
       Height: -1.21
-    SplineCurvature: 1
+    SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
     Value: 0
@@ -2813,9 +2813,9 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 23.5
+    Value: 22.3
     Center: 0
-    Range: {x: -25, y: 45}
+    Range: {x: -30, y: 40}
     Wrap: 0
     Recentering:
       Enabled: 0
@@ -2883,8 +2883,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 530992505}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.237, y: 1.7312552e-15, z: -4.202424e-17, w: 0.9715097}
-  m_LocalPosition: {x: -23.31, y: -2.7390835, z: -44.470802}
+  m_LocalRotation: {x: 0.19646467, y: -0.008868404, z: 0.0017770348, w: 0.9804692}
+  m_LocalPosition: {x: -23.31, y: -2.6829948, z: -43.88979}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
