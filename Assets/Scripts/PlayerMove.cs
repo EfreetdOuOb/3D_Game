@@ -58,6 +58,10 @@ public class PlayerMove : MonoBehaviour
     [Header("跳躍啟用（支援地板debuff）")]
     public bool canJump = true;
     
+    [Header("鉤索系統")]
+    public GrapplingHook grapplingHook;
+    public KeyCode grappleKey = KeyCode.F; // 設定 F 鍵為鉤索
+ 
     [Header("空中下墜調整")]
     public bool enableExtraGravity = true;
     public float fallGravityMultiplier = 2.2f;
@@ -246,10 +250,25 @@ public class PlayerMove : MonoBehaviour
             // 如果沒有攝像機，使用世界座標
             moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
         }
+        // 處理鉤索輸入
+        if (Input.GetKeyDown(grappleKey))
+        {
+            Vector3 hitPoint;
+            if (grapplingHook.TryFireGrapple(out hitPoint))
+            {
+                // 成功擊中，切換到鉤索狀態
+                grapplingHook.StartGrapple(hitPoint);
+                SetCurrentState(new GrappleState(this, grapplingHook, hitPoint));
+            }
+        } 
     }
     
     public void MovePlayer()
     {
+        // 如果正在鉤索，禁止常規移動控制
+        if (IsGrappling()) return;
+
+
         // 計算移動速度（高能模式下增強）
         float currentMoveSpeed = moveSpeed;
         float currentRotationSpeed = rotationSpeed;
@@ -480,6 +499,7 @@ public class PlayerMove : MonoBehaviour
     
     public void ApplyAirPhysicsModifiers()
     {
+        
         if (rb == null)
         {
             return;
@@ -490,6 +510,8 @@ public class PlayerMove : MonoBehaviour
         {
             return;
         }
+        
+        if (rb == null || IsGrappling()) return; // 鉤索時不受重力修改影響
         
         Vector3 velocity = rb.linearVelocity;
         
@@ -627,6 +649,13 @@ public class PlayerMove : MonoBehaviour
         animator.Play(animationName);
     }
 
+    //玩家是否在鉤索中
+    public bool IsGrappling()
+    {   
+        return current_state is GrappleState;
+    }
+
+
     
     
     // 在Scene視圖中顯示地面檢測範圍
@@ -672,6 +701,11 @@ public class PlayerMove : MonoBehaviour
     //切換當前狀態
     public void SetCurrentState(BaseState state)
     {
+        // 如果前一個狀態是鉤索狀態，且新狀態不是，則強制停止鉤索
+        if (current_state is GrappleState && !(state is GrappleState))
+        {
+            grapplingHook.StopGrapple();
+        }
         current_state = state;
     }
 }
