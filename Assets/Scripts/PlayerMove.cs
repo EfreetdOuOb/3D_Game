@@ -10,6 +10,12 @@ public class PlayerMove : MonoBehaviour
     private Vector3 moveDirection;
     private BaseState current_state;
 
+    public float horizontalInput;       // -1~1，目前的水平軸值
+    public bool turnLeftPressed;        // 這一幀是否剛按下 A
+    public bool turnRightPressed;       // 這一幀是否剛按下 D
+    
+
+
     [Header("移動設定")]
     public float moveSpeed = 5f;
     public float rotationSpeed = 100f;
@@ -233,6 +239,11 @@ public class PlayerMove : MonoBehaviour
         // 獲取WASD輸入
         float horizontal = Input.GetAxis("Horizontal"); // A/D 或 左/右箭頭
         float vertical = Input.GetAxis("Vertical");     // W/S 或 上/下箭頭
+        horizontalInput  = horizontal;
+        turnLeftPressed  = Input.GetKeyDown(KeyCode.A);
+        turnRightPressed = Input.GetKeyDown(KeyCode.D);
+         
+        
         
         // 計算移動方向（相對於攝像機）
         if (playerCamera != null)
@@ -341,6 +352,10 @@ public class PlayerMove : MonoBehaviour
     public bool ReleaseJumpKey()
     {
         return Input.GetButtonUp("Jump");
+    }
+    public bool JustLanded()            // 新增一個方法給 State 用
+    {
+        return wasGrounded && !isGrounded;  // 上一幀在空中，這一幀在地面
     }
     
     public void HandleChargeJump()

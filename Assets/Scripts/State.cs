@@ -18,55 +18,50 @@ public abstract class BaseState
 
 public class Idle : BaseState
 {
-    //構造函數，類在被實例化時的初始化方法，執行一次
     public Idle(PlayerMove _playerMove) : base(_playerMove)
     {
-        //播放動畫
         playerMove.PlayAnimation("Idle");
     }
-    //處理每幀邏輯
+
     public override void Update()
     {
-        //移動狀態
-        if(playerMove.IsMoving())
+        if (playerMove.IsMoving())
         {
-            //切換到move狀態
             playerMove.SetCurrentState(new Move(playerMove));
-            
-        }else if(!playerMove.IsMoving()&&playerMove.PressedJumpKey())
-            {
-                playerMove.SetCurrentState(new Charging(playerMove));
-            }
-    }
-    //處理人物運動
-    public override void FixedUpdate()
-    {
+            return;
+        }
+
         
-    }
-}
-public class Move : BaseState
-{
-    //構造函數，類在被實例化時的初始化方法，執行一次
-    public Move(PlayerMove _playerMove) : base(_playerMove)
-    {
-        //播放動畫
-        playerMove.PlayAnimation("Move");
-    }
-    //處理每幀邏輯
-    public override void Update()
-    {
-        //移動狀態
-        if(!playerMove.IsMoving())
-        {
-            //切換到MoveToIdle狀態
-            playerMove.SetCurrentState(new MoveToIdle(playerMove));
-        }else if(playerMove.IsMoving()&&playerMove.PressedJumpKey())
+
+        if (!playerMove.IsMoving() && playerMove.PressedJumpKey())
         {
             playerMove.SetCurrentState(new Charging(playerMove));
         }
-        
+    }
+
+    public override void FixedUpdate() { }
+}
+public class Move : BaseState
+{
+    public Move(PlayerMove _playerMove) : base(_playerMove)
+    {
+        playerMove.PlayAnimation("Move");
+    }
+
+    public override void Update()
+    {
+        if (!playerMove.IsMoving())
+        {
+            playerMove.SetCurrentState(new MoveToIdle(playerMove));
+            return;
+        }
 
         
+
+        if (playerMove.IsMoving() && playerMove.PressedJumpKey())
+        {
+            playerMove.SetCurrentState(new Charging(playerMove));
+        }
     }
     //處理人物運動
     public override void FixedUpdate()
@@ -77,22 +72,28 @@ public class Move : BaseState
 }
 public class MoveToIdle : BaseState
 {
-    //構造函數，類在被實例化時的初始化方法，執行一次
     public MoveToIdle(PlayerMove _playerMove) : base(_playerMove)
     {
-        //播放動畫
         playerMove.PlayAnimation("MoveToIdle");
     }
-    //處理每幀邏輯
+
     public override void Update()
     {
-        if(playerMove.IsAnimationCompleted("MoveToIdle"))
+        // 如果在過渡動畫中又開始移動，立刻打斷回 Move
+        if (playerMove.IsMoving())
+        {
+            playerMove.SetCurrentState(new Move(playerMove));
+            return;
+        }
+
+        if (playerMove.IsAnimationCompleted("MoveToIdle"))
         {
             playerMove.SetCurrentState(new Idle(playerMove));
         }
-        
-
-        
+        if (playerMove.IsMoving() && playerMove.PressedJumpKey())
+        {
+            playerMove.SetCurrentState(new Charging(playerMove));
+        }
     }
     //處理人物運動
     public override void FixedUpdate()
@@ -101,21 +102,64 @@ public class MoveToIdle : BaseState
         //playerMove.ApplyAirPhysicsModifiers();
     }
 }
-public class Charging : BaseState
+public class IdleToMove : BaseState
 {
-    //構造函數，類在被實例化時的初始化方法，執行一次
-    public Charging(PlayerMove _playerMove) : base(_playerMove)
+    public IdleToMove(PlayerMove playerMove) : base(playerMove)
     {
-        //播放動畫
-        playerMove.PlayAnimation("Charging");
+        playerMove.PlayAnimation("IdleToMove");
     }
-    //處理每幀邏輯
+
     public override void Update()
     {
-        if(playerMove.IsAnimationCompleted("Charging")&&playerMove.ReleaseJumpKey())
+        // IdleToMove 播完之後正式進入 Move 狀態
+        if (playerMove.IsAnimationCompleted("IdleToMove"))
+        {
+            playerMove.SetCurrentState(new Move(playerMove));
+        }
+        if (!playerMove.IsMoving() && playerMove.PressedJumpKey())
+        {
+            playerMove.SetCurrentState(new Charging(playerMove));
+        }
+    }
+
+    public override void FixedUpdate() 
+    { 
+
+    }
+}
+public class IdleToCharge : BaseState
+{
+    public IdleToCharge(PlayerMove playerMove) : base(playerMove)
+    {
+        playerMove.PlayAnimation("IdleToCharge");
+    }
+
+    public override void Update()
+    {
+        if (playerMove.IsAnimationCompleted("IdleToCharge"))
+        {
+            playerMove.SetCurrentState(new Charging(playerMove));
+        }
+    }
+
+    public override void FixedUpdate() { }
+}
+
+
+public class Charging : BaseState
+{
+    public Charging(PlayerMove _playerMove) : base(_playerMove)
+    {
+        playerMove.PlayAnimation("Charging");
+    }
+
+    public override void Update()
+    {
+        // 放開跳躍鍵就進入 Jump，不必等動畫完全結束
+        if (playerMove.ReleaseJumpKey())
         {
             playerMove.SetCurrentState(new Jump(playerMove));
-        } 
+        }
     }
     //處理人物運動
     public override void FixedUpdate()
@@ -125,26 +169,80 @@ public class Charging : BaseState
 }
 public class Jump : BaseState
 {
-    //構造函數，類在被實例化時的初始化方法，執行一次
+    private bool hasLeftGround = false;
     public Jump(PlayerMove _playerMove) : base(_playerMove)
     {
-        //播放動畫
         playerMove.PlayAnimation("Jump");
     }
-    //處理每幀邏輯
+
     public override void Update()
     {
-        if(playerMove.IsAnimationCompleted("Jump"))
+        if (playerMove.PressedJumpKey())
         {
-            playerMove.SetCurrentState(new Idle(playerMove));
-        } 
+            playerMove.SetCurrentState(new Charging(playerMove));
+            return;
+        }
+        // 1. 先等到真的離開地面一次
+        if (!hasLeftGround)
+        {
+            if (!playerMove.IsGrounded())
+                hasLeftGround = true;   // 已經離地
+            return;
+        }
+
+        // 1. 優先判斷是否落地
+        if (playerMove.IsGrounded())
+        {
+            playerMove.SetCurrentState(new Land(playerMove));
+            return;
+        }
+
+        // 2. （選擇性）如果動畫播完但還在空中，可以切成一個 Loop 的空中狀態 Air
+        /*
+        if (playerMove.IsAnimationCompleted("Jump"))
+        {
+            playerMove.SetCurrentState(new Air(playerMove));
+        }
+        */
     }
-    //處理人物運動
+
+    public override void FixedUpdate() { }
+}
+public class Land : BaseState
+{
+    public Land(PlayerMove _playerMove) : base(_playerMove)
+    {
+        playerMove.PlayAnimation("Land");
+    }
+
+    public override void Update()
+    { 
+        if (playerMove.PressedJumpKey())
+        {
+            playerMove.SetCurrentState(new Charging(playerMove));
+            return;
+        }
+
+        // 落地動畫播完後，看玩家有沒有在移動
+        if (playerMove.IsAnimationCompleted("Land"))
+        {
+            if (playerMove.IsMoving())
+                playerMove.SetCurrentState(new Move(playerMove));
+            else
+                playerMove.SetCurrentState(new Idle(playerMove));
+        }
+        
+    }
+
     public override void FixedUpdate()
     {
         
     }
 }
+
+
+
+
 public class GrappleState : BaseState
 {
     private GrapplingHook hook;
