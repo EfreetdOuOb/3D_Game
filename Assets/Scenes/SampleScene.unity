@@ -3200,7 +3200,7 @@ Transform:
   m_GameObject: {fileID: 530992505}
   serializedVersion: 2
   m_LocalRotation: {x: 0.048825447, y: -0.009564633, z: 0.0004675767, w: 0.9987614}
-  m_LocalPosition: {x: -20.72, y: -3.6261601, z: -44.75668}
+  m_LocalPosition: {x: -23.39, y: -3.6261601, z: -46.446682}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5143,6 +5143,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
+  isPressedE: 0
 --- !u!114 &711516004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8066,6 +8067,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
+  isPressedE: 0
 --- !u!65 &993321817
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13965,7 +13967,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0ee4ccd4a89d6674899db2236ef630d1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -20.72
+      value: -23.39
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0ee4ccd4a89d6674899db2236ef630d1, type: 3}
       propertyPath: m_LocalPosition.y
@@ -13973,7 +13975,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0ee4ccd4a89d6674899db2236ef630d1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -39.42
+      value: -41.11
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0ee4ccd4a89d6674899db2236ef630d1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -14477,10 +14479,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.357453
+  m_Radius: 1.4344103
   m_Height: 4.670835
   m_Direction: 1
-  m_Center: {x: 0, y: 1.149994, z: 0}
+  m_Center: {x: 0, y: 1.1499941, z: -0.076957464}
 --- !u!114 &1662324680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14671,6 +14673,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
+  isPressedE: 0
 --- !u!1 &1665101345
 GameObject:
   m_ObjectHideFlags: 0
@@ -17124,6 +17127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
+  isPressedE: 0
 --- !u!114 &1879994772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17456,6 +17460,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
+  isPressedE: 0
 --- !u!114 &1927512991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19179,6 +19184,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
+  isPressedE: 0
 --- !u!114 &2074216064
 MonoBehaviour:
   m_ObjectHideFlags: 0

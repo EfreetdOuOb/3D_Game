@@ -147,7 +147,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: "\u9AA8\u67B6|Jump"
+      name: Jump
       takeName: "\u9AA8\u67B6|Jump"
       internalID: 3562688642710617517
       firstFrame: 0
