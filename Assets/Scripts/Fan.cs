@@ -14,6 +14,11 @@ public class Fan : MonoBehaviour
     // 粒子特效
     public ParticleSystem fanParticle;
 
+    // 可調整吹風方向（度數）
+    [Header("Direction Offset (degrees)")]
+    [Range(-90f, 90f)] public float directionPitch = 0f; // 上下（正為向上）
+    [Range(-180f, 180f)] public float directionYaw = 0f;  // 左右（正為向右）
+
     // Oscillate 模式參數
     public float oscillateAngle = 45f; // 左右最大搖擺角度
     [Min(0.01f)] public float oscillateSpeed = 1.0f; // 不可為0
@@ -83,6 +88,15 @@ public class Fan : MonoBehaviour
         }
     }
 
+    private Vector3 GetBlowDirection()
+    {
+        // 先以 transform.forward 為基準，先繞本體 up 軸做 yaw（左右），再繞本體 right 軸做 pitch（上下）
+        Vector3 dir = transform.forward;
+        dir = Quaternion.AngleAxis(directionYaw, transform.up) * dir;
+        dir = Quaternion.AngleAxis(directionPitch, transform.right) * dir;
+        return dir.normalized;
+    }
+
     private void OnTriggerStay(Collider other)
     {
         if (!other.CompareTag("Player")) return;
@@ -91,7 +105,7 @@ public class Fan : MonoBehaviour
         Rigidbody rb = other.attachedRigidbody;
         if (rb != null)
         {
-            rb.AddForce(transform.forward.normalized * forceStrength, ForceMode.Acceleration);
+            rb.AddForce(GetBlowDirection() * forceStrength, ForceMode.Acceleration);
         }
     }
 
@@ -99,7 +113,7 @@ public class Fan : MonoBehaviour
     {
         Gizmos.color = Color.cyan;
         Vector3 start = transform.position;
-        Vector3 dir = transform.forward;
+        Vector3 dir = GetBlowDirection();
         float arrowLength = 2f;
         Gizmos.DrawRay(start, dir * arrowLength);
         Vector3 right = Quaternion.LookRotation(dir) * Quaternion.Euler(0, 150, 0) * Vector3.forward;

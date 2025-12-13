@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 2
+  m_Name: 3
   m_Shader: {fileID: -6465566751694194690, guid: a75964a6043c1304a955ccd6b916ba95, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -48,11 +48,11 @@ Material:
     - _QueueOffset: 0
     - _RimLightPower: 20
     m_Colors:
-    - _RimLightColor: {r: 2, g: 2, b: 2, a: 0}
-    - _Tint: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 0}
+    - _RimLightColor: {r: 0.084905684, g: 0.026593953, b: 0.003604485, a: 0}
+    - _Tint: {r: 0.09433961, g: 0.061613176, b: 0.030704873, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &1103413676739393573
+--- !u!114 &9117654971887544139
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
