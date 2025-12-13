@@ -503,10 +503,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: TextPanel
       objectReference: {fileID: 0}
-    - target: {fileID: 2392701646998432162, guid: c2498c3e79ddcf94c9ca42af3338dd02, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -600,17 +596,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3163577134518090074, guid: a239beec5a604a54f82908b270155328, type: 3}
-      propertyPath: m_AdditionalShaderChannelsFlag
-      value: 25
-      objectReference: {fileID: 0}
     - target: {fileID: 4019320202689828143, guid: a239beec5a604a54f82908b270155328, type: 3}
       propertyPath: m_Name
       value: HintPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 4019320202689828143, guid: a239beec5a604a54f82908b270155328, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -628,10 +616,6 @@ PrefabInstance:
     - target: {fileID: 3044496379543503494, guid: ed52285fd1194a04e96790aa42ea657a, type: 3}
       propertyPath: m_Name
       value: GameTitle
-      objectReference: {fileID: 0}
-    - target: {fileID: 3044496379543503494, guid: ed52285fd1194a04e96790aa42ea657a, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8476876327750483015, guid: ed52285fd1194a04e96790aa42ea657a, type: 3}
       propertyPath: m_Pivot.x
@@ -827,8 +811,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: SettingPanel
       objectReference: {fileID: 0}
-    - target: {fileID: 1501650036483941173, guid: e17557aadb26b8c45a598b3ef8411d75, type: 3}
-      propertyPath: m_IsActive
+    - target: {fileID: 4001831717805866395, guid: e17557aadb26b8c45a598b3ef8411d75, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7082031884020484130, guid: e17557aadb26b8c45a598b3ef8411d75, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8948030575262174825, guid: e17557aadb26b8c45a598b3ef8411d75, type: 3}
@@ -927,10 +915,6 @@ PrefabInstance:
     - target: {fileID: 7423518021781672606, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
       propertyPath: m_Name
       value: UIGamePausePanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 7423518021781672606, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8612153925752128396, guid: ada526cffecaa464ca52e4927da99f3a, type: 3}
       propertyPath: m_Pivot.x
@@ -1105,21 +1089,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2330951189503433187, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2844468207177788023, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_Name
       value: HUD
-      objectReference: {fileID: 0}
-    - target: {fileID: 2844468207177788023, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6700754932148129765, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
