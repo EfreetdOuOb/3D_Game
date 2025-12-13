@@ -353,10 +353,7 @@ public class PlayerMove : MonoBehaviour
     {
         return Input.GetButtonUp("Jump");
     }
-    public bool JustLanded()            // 新增一個方法給 State 用
-    {
-        return wasGrounded && !isGrounded;  // 上一幀在空中，這一幀在地面
-    }
+    
     
     public void HandleChargeJump()
     {
