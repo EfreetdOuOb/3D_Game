@@ -17,6 +17,10 @@ public class Interaction : MonoBehaviour
 
     void Update()
     {
+        if (!isPlayerInside) return;
+        
+
+        
          if((KeyInfo.activeSelf || isPressedE) && Input.GetKeyDown(KeyCode.E))
         {
             // 切換狀態
