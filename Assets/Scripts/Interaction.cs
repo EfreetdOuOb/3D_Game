@@ -6,11 +6,12 @@ public class Interaction : MonoBehaviour
     public GameObject TextPanel;
 
     public bool isPressedE = false;
+    public bool isPlayerInside = false;
 
     void Awake()
     {
         KeyInfo.SetActive(false);
-        TextPanel.SetActive(false);
+        this.TextPanel.SetActive(false);
     }
 
 
@@ -20,7 +21,7 @@ public class Interaction : MonoBehaviour
         {
             // 切換狀態
             isPressedE = !isPressedE;
-            TextPanel.SetActive(isPressedE);
+            this.TextPanel.SetActive(isPressedE);
             
             // 如果需要在打開視窗時隱藏提示，可以加這行：
             // KeyInfo.SetActive(!isPressedE); 
@@ -30,12 +31,23 @@ public class Interaction : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        KeyInfo.SetActive(true);
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInside = true;
+            KeyInfo.SetActive(true);
+        }
+        
     }
 
     public void OnTriggerExit(Collider other)
     {
-        KeyInfo.SetActive(false);
-        TextPanel.SetActive(false);
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInside = false;
+            KeyInfo.SetActive(false);
+        }
+        
+        this.TextPanel.SetActive(false);
+        isPressedE = false;
     }
 }
