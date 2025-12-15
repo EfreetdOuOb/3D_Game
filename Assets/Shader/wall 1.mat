@@ -56,7 +56,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AmbientIntensity: 1
-    - _FadeDistance: 2.54
+    - _FadeDistance: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     - _RimLightPower: 31.4
