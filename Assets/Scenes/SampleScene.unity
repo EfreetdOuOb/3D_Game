@@ -12042,13 +12042,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410087039}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.4682115, y: 0.18992537, z: -0.10380002, w: 0.85669833}
+  m_LocalRotation: {x: 0.38022348, y: -0.10458615, z: 0.043321, w: 0.91794074}
   m_LocalPosition: {x: -134.7, y: 13.44, z: -18.22}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 57.316, y: 25, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: -13, z: 0}
 --- !u!114 &410087042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18242,6 +18242,7 @@ MonoBehaviour:
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
   isPressedE: 0
+  isPlayerInside: 0
 --- !u!65 &606309444
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21284,6 +21285,7 @@ MonoBehaviour:
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
   isPressedE: 0
+  isPlayerInside: 0
 --- !u!114 &711516004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29306,6 +29308,7 @@ MonoBehaviour:
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
   isPressedE: 0
+  isPlayerInside: 0
 --- !u!65 &931541467
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -31106,6 +31109,7 @@ MonoBehaviour:
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
   isPressedE: 0
+  isPlayerInside: 0
 --- !u!65 &993321817
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -43054,6 +43058,7 @@ MonoBehaviour:
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
   isPressedE: 0
+  isPlayerInside: 0
 --- !u!65 &1412877937
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -47910,6 +47915,7 @@ MonoBehaviour:
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
   isPressedE: 0
+  isPlayerInside: 0
 --- !u!65 &1599252413
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -51051,6 +51057,7 @@ MonoBehaviour:
   KeyInfo: {fileID: 1511738525}
   TextPanel: {fileID: 114885085}
   isPressedE: 0
+  isPlayerInside: 0
 --- !u!65 &1668308968
 BoxCollider:
   m_ObjectHideFlags: 0
