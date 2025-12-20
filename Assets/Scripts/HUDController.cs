@@ -142,7 +142,7 @@ public class HUDController : MonoBehaviour
 		energyThresholdMarker.anchorMax = new Vector2(t, 1f);
 		energyThresholdMarker.pivot = new Vector2(0.5f, 0.5f);
 		energyThresholdMarker.anchoredPosition = Vector2.zero;
-		energyThresholdMarker.sizeDelta = new Vector2(thresholdLineWidth, 0f); // 給定線寬，垂直方向全滿
+		energyThresholdMarker.sizeDelta = new Vector2(thresholdLineWidth, 1f); // 給定線寬，垂直方向全滿
 
 		// 若方向反轉（RightToLeft），位置需鏡像
 		if (energySlider.direction == Slider.Direction.RightToLeft)
