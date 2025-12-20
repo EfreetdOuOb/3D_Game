@@ -39372,11 +39372,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2982345692356819161, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.00009918213
+      value: 0.000091552734
       objectReference: {fileID: 0}
     - target: {fileID: 2982345692356819161, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000020980835
+      value: 0.000022888184
       objectReference: {fileID: 0}
     - target: {fileID: 3631448134161144026, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: player
@@ -39616,11 +39616,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7593906547555634053, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 1.751503
+      value: 1.7514954
       objectReference: {fileID: 0}
     - target: {fileID: 7593906547555634053, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.6139002
+      value: -0.61389923
       objectReference: {fileID: 0}
     - target: {fileID: 7621158949409510761, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_SizeDelta.x
@@ -39632,11 +39632,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7621158949409510761, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.105903625
+      value: 0.105895996
       objectReference: {fileID: 0}
     - target: {fileID: 7621158949409510761, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000009536743
+      value: 0.0000076293945
+      objectReference: {fileID: 0}
+    - target: {fileID: 8221293040234408037, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 193.4806
+      objectReference: {fileID: 0}
+    - target: {fileID: 8221293040234408037, guid: e1ce4e03b01ce4646983902d33129507, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 24.1851
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
