@@ -46,6 +46,7 @@ public class Move : BaseState
     public Move(PlayerMove _playerMove) : base(_playerMove)
     {
         playerMove.PlayAnimation("Move");
+        playerMove.PlayMoveSound();
     }
 
     public override void Update()
@@ -151,6 +152,8 @@ public class Charging : BaseState
     public Charging(PlayerMove _playerMove) : base(_playerMove)
     {
         playerMove.PlayAnimation("Charging");
+        playerMove.PlayChargingSound();
+        
     }
 
     public override void Update()
@@ -173,6 +176,7 @@ public class Jump : BaseState
     public Jump(PlayerMove _playerMove) : base(_playerMove)
     {
         playerMove.PlayAnimation("Jump");
+        playerMove.PlayJumpSound(); // 進入跳躍時播聲音
     }
 
     public override void Update()
@@ -213,6 +217,7 @@ public class Land : BaseState
     public Land(PlayerMove _playerMove) : base(_playerMove)
     {
         playerMove.PlayAnimation("Land");
+        playerMove.PlayLandSound();   // 落地時播聲音
     }
 
     public override void Update()

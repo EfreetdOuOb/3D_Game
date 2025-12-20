@@ -13,6 +13,14 @@ public class PlayerMove : MonoBehaviour
     public float horizontalInput;       // -1~1，目前的水平軸值
     public bool turnLeftPressed;        // 這一幀是否剛按下 A
     public bool turnRightPressed;       // 這一幀是否剛按下 D
+
+     [Header("角色音效")]
+    public AudioSource sfxSource;        // 指到玩家身上的 AudioSource
+    public AudioClip jumpClip;
+    public AudioClip landClip;
+    public AudioClip moveClip;
+    public AudioClip chargingClip;
+    //可以再加
     
 
 
@@ -47,11 +55,9 @@ public class PlayerMove : MonoBehaviour
     public float groundCheckWidth = 0.4f; // capsule較窄，調整檢測寬度
     public LayerMask groundMask;
     
-    [Header("攝像機")]
-    public Camera playerCamera;
-    
-    
-    
+    [Header("攝影機")]
+    public Camera playerCamera; 
+
     [Header("蓄力狀態")]
     private bool isCharging = false;
     private float currentChargeTime = 0f;
@@ -197,6 +203,8 @@ public class PlayerMove : MonoBehaviour
         
         // 蓄力跳躍（輸入檢測在 Update 中）
         HandleChargeJump();
+
+        
     }
     
     void FixedUpdate()
@@ -273,6 +281,8 @@ public class PlayerMove : MonoBehaviour
             }
         } 
     }
+
+    
     
     public void MovePlayer()
     {
@@ -353,7 +363,66 @@ public class PlayerMove : MonoBehaviour
     {
         return Input.GetButtonUp("Jump");
     }
+
+    //播放音效
+    public void PlayJumpSound()
+    {
+        if (sfxSource == null || jumpClip == null) return;
+
+        // 若正在播跳躍聲，就重頭開始，而不是再疊一條
+        if (sfxSource.isPlaying && sfxSource.clip == jumpClip)
+        {
+            sfxSource.time = 0f;
+        }
+        else
+        {
+            sfxSource.clip = jumpClip;
+            sfxSource.Play();
+        }
+    }
+
+    public void PlayLandSound()
+    {
+        if(sfxSource == null || landClip == null) return;
+        if (sfxSource.isPlaying && sfxSource.clip == landClip)
+        {
+            sfxSource.time = 0f;
+        }
+        else
+        {
+            sfxSource.clip = landClip;
+            sfxSource.Play();
+        }
     
+    }   
+
+    public void PlayMoveSound()
+    {
+        if(sfxSource == null || moveClip == null) return;
+        if (sfxSource.isPlaying && sfxSource.clip == moveClip)
+        {
+            sfxSource.time = 0f;
+        }
+        else
+        {
+            sfxSource.clip = moveClip;
+            sfxSource.Play();
+        }
+    }
+    public void PlayChargingSound()
+    {
+        if(sfxSource == null || chargingClip == null) return;
+        if(sfxSource.isPlaying && sfxSource.clip == chargingClip)
+        {
+            sfxSource.time = 0f;
+        }
+        else
+        {
+            sfxSource.clip = chargingClip;
+            sfxSource.Play();
+        }
+    }
+
     
     public void HandleChargeJump()
     {
