@@ -91,6 +91,7 @@ GameObject:
   - component: {fileID: 3993401866606502671}
   - component: {fileID: 7777751401922937621}
   - component: {fileID: 8800101599759652759}
+  - component: {fileID: 1235132609522951961}
   m_Layer: 5
   m_Name: restartBtn
   m_TagString: Untagged
@@ -212,6 +213,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1235132609522951961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571814115706510970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff35c14bffe8b50428447a961088422f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
+  hoverClip: {fileID: 8300000, guid: aa426ce5de4a41b41b5eb1b50b1ae4c5, type: 3}
+  clickClip: {fileID: 8300000, guid: c7ee71c4b7f305744ac441ff25aeb3c8, type: 3}
 --- !u!1 &1573877258108712940
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,6 +240,7 @@ GameObject:
   - component: {fileID: 521042252869064695}
   - component: {fileID: 1408745653855892958}
   - component: {fileID: 862764982837826505}
+  - component: {fileID: 6122423146908604164}
   m_Layer: 5
   m_Name: menuBtn
   m_TagString: Untagged
@@ -345,6 +362,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &6122423146908604164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573877258108712940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff35c14bffe8b50428447a961088422f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
+  hoverClip: {fileID: 8300000, guid: aa426ce5de4a41b41b5eb1b50b1ae4c5, type: 3}
+  clickClip: {fileID: 8300000, guid: c7ee71c4b7f305744ac441ff25aeb3c8, type: 3}
 --- !u!1 &1696948501060887080
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,6 +464,7 @@ GameObject:
   - component: {fileID: 4554245780138196514}
   - component: {fileID: 8632049246357859937}
   - component: {fileID: 3798296168836968167}
+  - component: {fileID: 1000672122657439243}
   m_Layer: 5
   m_Name: settingBtn
   m_TagString: Untagged
@@ -553,6 +586,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1000672122657439243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2359518041899922954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff35c14bffe8b50428447a961088422f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
+  hoverClip: {fileID: 8300000, guid: aa426ce5de4a41b41b5eb1b50b1ae4c5, type: 3}
+  clickClip: {fileID: 8300000, guid: c7ee71c4b7f305744ac441ff25aeb3c8, type: 3}
 --- !u!1 &3728370111146806576
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,6 +692,7 @@ GameObject:
   - component: {fileID: 7978347995627432534}
   - component: {fileID: 3845156483310533255}
   - component: {fileID: 6726763886207485434}
+  - component: {fileID: 4008353979501854768}
   m_Layer: 5
   m_Name: resumeBtn
   m_TagString: Untagged
@@ -765,6 +814,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &4008353979501854768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3845627370478440285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff35c14bffe8b50428447a961088422f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
+  hoverClip: {fileID: 8300000, guid: aa426ce5de4a41b41b5eb1b50b1ae4c5, type: 3}
+  clickClip: {fileID: 8300000, guid: c7ee71c4b7f305744ac441ff25aeb3c8, type: 3}
 --- !u!1 &4128266118639056768
 GameObject:
   m_ObjectHideFlags: 0
@@ -823,7 +887,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.055817343, g: 0.052287295, b: 0.23584908, a: 0.6313726}
+  m_Color: {r: 0.05882353, g: 0.0627451, b: 0.2, a: 0.56078434}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -937,7 +1001,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8612153925752128396
 RectTransform:
   m_ObjectHideFlags: 0

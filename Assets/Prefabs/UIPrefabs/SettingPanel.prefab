@@ -804,6 +804,7 @@ GameObject:
   - component: {fileID: 6275663500442807829}
   - component: {fileID: 2305997482833830213}
   - component: {fileID: 6604924522217753917}
+  - component: {fileID: 1525317663314723352}
   m_Layer: 5
   m_Name: backBtn
   m_TagString: Untagged
@@ -925,6 +926,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1525317663314723352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3307292734316703851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff35c14bffe8b50428447a961088422f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
+  hoverClip: {fileID: 8300000, guid: aa426ce5de4a41b41b5eb1b50b1ae4c5, type: 3}
+  clickClip: {fileID: 8300000, guid: c7ee71c4b7f305744ac441ff25aeb3c8, type: 3}
 --- !u!1 &3413954894875020126
 GameObject:
   m_ObjectHideFlags: 0
@@ -2024,7 +2040,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.16037738, g: 0.16037738, b: 0.16037738, a: 0.42745098}
+  m_Color: {r: 0.05882353, g: 0.0627451, b: 0.2, a: 0.56078434}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
