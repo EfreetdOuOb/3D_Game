@@ -99,6 +99,9 @@ public class PlayerMove : MonoBehaviour
     private bool isHighEnergyMode = false;      // 是否處於高能模式
     private float currentEnergy = 100f;         // 當前能量
     
+    [Header("輸入控制")]
+    private bool inputEnabled = true;           // 是否允許輸入（用於通關等情況）
+    
     [Header("空中狀態紀錄")]
     private bool isJumpHeld = false;
     private bool hasJumpedSinceGrounded = false;
@@ -244,6 +247,16 @@ public class PlayerMove : MonoBehaviour
     
     public void HandleInput()
     {
+        // 如果輸入被禁用，清除所有輸入
+        if (!inputEnabled)
+        {
+            horizontalInput = 0f;
+            turnLeftPressed = false;
+            turnRightPressed = false;
+            moveDirection = Vector3.zero;
+            return;
+        }
+        
         // 獲取WASD輸入
         float horizontal = Input.GetAxis("Horizontal"); // A/D 或 左/右箭頭
         float vertical = Input.GetAxis("Vertical");     // W/S 或 上/下箭頭
@@ -269,8 +282,8 @@ public class PlayerMove : MonoBehaviour
             // 如果沒有攝像機，使用世界座標
             moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
         }
-        // 處理鉤索輸入
-        if (Input.GetKeyDown(grappleKey))
+        // 處理鉤索輸入（僅在輸入啟用時）
+        if (inputEnabled && Input.GetKeyDown(grappleKey))
         {
             Vector3 hitPoint;
             if (grapplingHook.TryFireGrapple(out hitPoint))
@@ -286,6 +299,20 @@ public class PlayerMove : MonoBehaviour
     
     public void MovePlayer()
     {
+        // 如果輸入被禁用，停止移動
+        if (!inputEnabled)
+        {
+            // 平滑停止水平移動
+            Vector3 currentVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            Vector3 newVel = Vector3.MoveTowards(
+                currentVel, 
+                Vector3.zero, 
+                moveDeceleration * Time.fixedDeltaTime
+            );
+            rb.linearVelocity = new Vector3(newVel.x, rb.linearVelocity.y, newVel.z);
+            return;
+        }
+        
         // 如果正在鉤索，禁止常規移動控制
         if (IsGrappling()) return;
 
@@ -357,11 +384,11 @@ public class PlayerMove : MonoBehaviour
     }
     public bool PressedJumpKey()
     {
-        return Input.GetButtonDown("Jump");
+        return inputEnabled && Input.GetButtonDown("Jump");
     }
     public bool ReleaseJumpKey()
     {
-        return Input.GetButtonUp("Jump");
+        return inputEnabled && Input.GetButtonUp("Jump");
     }
 
     //播放音效
@@ -638,6 +665,9 @@ public class PlayerMove : MonoBehaviour
     
     public void HandleHighEnergyMode()
     {
+        // 如果輸入被禁用，不處理高能模式輸入
+        if (!inputEnabled) return;
+        
         // 檢測右鍵輸入（Fire2 對應滑鼠右鍵或 Alt 鍵）
         if (Input.GetButtonDown("Fire2"))
         {
@@ -722,6 +752,45 @@ public class PlayerMove : MonoBehaviour
     public float GetMaxEnergy()
     {
         return maxEnergy;
+    }
+    
+    // 設置輸入是否啟用（用於通關等情況）
+    public void SetInputEnabled(bool enabled)
+    {
+        inputEnabled = enabled;
+        if (!enabled)
+        {
+            // 禁用輸入時，清除當前輸入狀態
+            horizontalInput = 0f;
+            turnLeftPressed = false;
+            turnRightPressed = false;
+            moveDirection = Vector3.zero;
+            
+            // 立即停止所有移動（凍結 Rigidbody）
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+        }
+    }
+    
+    // 獲取輸入是否啟用
+    public bool IsInputEnabled()
+    {
+        return inputEnabled;
+    }
+    
+    // 完全停止玩家移動（用於通關等情況）
+    public void StopPlayerMovement()
+    {
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+        moveDirection = Vector3.zero;
+        horizontalInput = 0f;
     }
 
     //播放角色動畫

@@ -29,15 +29,15 @@ public class GameClear : MonoBehaviour
     [Tooltip("自動載入下一關的延遲時間（秒）")]
     public float autoLoadNextSceneDelay = 3f;
     
-    [Tooltip("是否在通關時暫停遊戲")]
-    public bool pauseOnClear = true;
-    
     [Header("玩家檢測")]
     [Tooltip("玩家層級")]
     public LayerMask playerLayer = 1;
     
     [Tooltip("玩家標籤")]
     public string playerTag = "Player";
+    
+    [Tooltip("玩家物件（可選，為空則自動尋找）")]
+    public PlayerMove playerMove;
     
     // 內部狀態
     private bool isCleared = false;                    // 是否已通關
@@ -49,6 +49,12 @@ public class GameClear : MonoBehaviour
     {
         // 記錄遊戲開始時間
         gameStartTime = Time.time;
+        
+        // 自動尋找玩家（如果未指定）
+        if (playerMove == null)
+        {
+            playerMove = FindFirstObjectByType<PlayerMove>();
+        }
         
         // 確保有 Collider 組件且設為 Trigger
         triggerCollider = GetComponent<Collider>();
@@ -131,13 +137,14 @@ public class GameClear : MonoBehaviour
         
         Debug.Log($"恭喜！遊戲通關！通關時間: {FormatTime(clearTime)}");
         
-        // 暫停遊戲（如果啟用）
-        if (pauseOnClear && GameManager.Instance != null)
+        // 禁用玩家輸入並停止移動（不暫停遊戲，這樣音效可以正常播放）
+        if (playerMove != null)
         {
-            GameManager.Instance.PauseGame();
+            playerMove.SetInputEnabled(false);
+            playerMove.StopPlayerMovement();
         }
         
-        // 播放音效
+        // 播放音效（確保音效可以正常播放，因為沒有暫停遊戲）
         if (clearSound != null)
         {
             clearSound.Play();
@@ -161,6 +168,10 @@ public class GameClear : MonoBehaviour
             timeDisplayText.text = FormatTime(clearTime);
         }
         
+        // 確保游標可見且可點擊（用於點擊 UI 按鈕）
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        
         // 自動載入下一關（如果設定了）
         if (!string.IsNullOrEmpty(nextSceneName))
         {
@@ -170,11 +181,10 @@ public class GameClear : MonoBehaviour
     
     void LoadNextScene()
     {
-        // 恢復時間流逝
-        if (GameManager.Instance != null)
+        // 恢復玩家輸入（如果有的話）
+        if (playerMove != null)
         {
-            Time.timeScale = 1f;
-            AudioListener.pause = false;
+            playerMove.SetInputEnabled(true);
         }
         
         // 載入下一關
