@@ -20,6 +20,8 @@ public class PlayerMove : MonoBehaviour
     public AudioClip landClip;
     public AudioClip moveClip;
     public AudioClip chargingClip;
+    public AudioClip highEnergyOnClip;   // 高能模式開啟音效
+    public AudioClip highEnergyOffClip;  // 高能模式關閉音效（可選，如果為空則使用開啟音效）
     //可以再加
     
 
@@ -396,6 +398,9 @@ public class PlayerMove : MonoBehaviour
     {
         if (sfxSource == null || jumpClip == null) return;
 
+        // 確保不循環
+        sfxSource.loop = false;
+
         // 若正在播跳躍聲，就重頭開始，而不是再疊一條
         if (sfxSource.isPlaying && sfxSource.clip == jumpClip)
         {
@@ -411,6 +416,10 @@ public class PlayerMove : MonoBehaviour
     public void PlayLandSound()
     {
         if(sfxSource == null || landClip == null) return;
+        
+        // 確保不循環
+        sfxSource.loop = false;
+        
         if (sfxSource.isPlaying && sfxSource.clip == landClip)
         {
             sfxSource.time = 0f;
@@ -426,9 +435,14 @@ public class PlayerMove : MonoBehaviour
     public void PlayMoveSound()
     {
         if(sfxSource == null || moveClip == null) return;
+        
+        // 移動音效設置為循環播放
+        sfxSource.loop = true;
+        
         if (sfxSource.isPlaying && sfxSource.clip == moveClip)
         {
-            sfxSource.time = 0f;
+            // 如果已經在播放移動音效，不需要重新播放
+            return;
         }
         else
         {
@@ -436,9 +450,26 @@ public class PlayerMove : MonoBehaviour
             sfxSource.Play();
         }
     }
+    
+    // 停止移動音效
+    public void StopMoveSound()
+    {
+        if(sfxSource == null || moveClip == null) return;
+        
+        // 如果正在播放移動音效，則停止
+        if (sfxSource.isPlaying && sfxSource.clip == moveClip)
+        {
+            sfxSource.Stop();
+        }
+    }
+    
     public void PlayChargingSound()
     {
         if(sfxSource == null || chargingClip == null) return;
+        
+        // 確保不循環
+        sfxSource.loop = false;
+        
         if(sfxSource.isPlaying && sfxSource.clip == chargingClip)
         {
             sfxSource.time = 0f;
@@ -711,14 +742,35 @@ public class PlayerMove : MonoBehaviour
     void SetHighEnergyMode(bool enable)
     {
         isHighEnergyMode = enable;
-        
+
         if (enable)
         {
             Debug.Log($"高能模式開啟！當前能量: {currentEnergy:F1}/{maxEnergy:F1}");
+            // 播放開啟音效
+            PlayHighEnergySound(true);
         }
         else
         {
             Debug.Log($"高能模式關閉。當前能量: {currentEnergy:F1}/{maxEnergy:F1}");
+            // 播放關閉音效
+            PlayHighEnergySound(false);
+        }
+    }
+    
+    // 播放高能模式音效
+    void PlayHighEnergySound(bool isOn)
+    {
+        if (sfxSource == null) return;
+        
+        // 確保不循環
+        sfxSource.loop = false;
+        
+        AudioClip clipToPlay = isOn ? highEnergyOnClip : (highEnergyOffClip != null ? highEnergyOffClip : highEnergyOnClip);
+        
+        if (clipToPlay != null)
+        {
+            sfxSource.clip = clipToPlay;
+            sfxSource.Play();
         }
     }
     

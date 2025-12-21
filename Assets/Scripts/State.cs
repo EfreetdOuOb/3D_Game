@@ -76,6 +76,7 @@ public class MoveToIdle : BaseState
     public MoveToIdle(PlayerMove _playerMove) : base(_playerMove)
     {
         playerMove.PlayAnimation("MoveToIdle");
+        playerMove.StopMoveSound(); // 停止移動音效
     }
 
     public override void Update()
@@ -152,6 +153,7 @@ public class Charging : BaseState
     public Charging(PlayerMove _playerMove) : base(_playerMove)
     {
         playerMove.PlayAnimation("Charging");
+        playerMove.StopMoveSound(); // 停止移動音效
         playerMove.PlayChargingSound();
         
     }
@@ -176,6 +178,7 @@ public class Jump : BaseState
     public Jump(PlayerMove _playerMove) : base(_playerMove)
     {
         playerMove.PlayAnimation("Jump");
+        playerMove.StopMoveSound(); // 停止移動音效
         playerMove.PlayJumpSound(); // 進入跳躍時播聲音
     }
 
@@ -257,6 +260,7 @@ public class GrappleState : BaseState
     {
         this.hook = _hook;
         this.targetPoint = _targetPoint;
+        playerMove.StopMoveSound(); // 停止移動音效
     }
 
     public override void Update()
