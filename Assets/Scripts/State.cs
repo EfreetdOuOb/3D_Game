@@ -161,9 +161,48 @@ public class Charging : BaseState
     public override void Update()
     {
         // 放開跳躍鍵就進入 Jump，不必等動畫完全結束
-        if (playerMove.ReleaseJumpKey())
+        // 這個檢查應該優先，因為如果玩家正在蓄力並放開跳躍鍵，應該執行跳躍
+        if (playerMove.ReleaseJumpKey() && playerMove.IsCharging())
         {
             playerMove.SetCurrentState(new Jump(playerMove));
+            return;
+        }
+        
+        // 檢查玩家是否在蓄力時取消蓄力
+        // 但需要考慮前0.25秒的快速跳躍時間窗口
+        // 只有在明確沒有蓄力且不在快速跳躍窗口內時，才切換狀態
+        if (!playerMove.IsCharging())
+        {
+            // 如果還在快速跳躍窗口內（0.25秒內），保持當前狀態等待快速跳躍執行
+            if (playerMove.IsInQuickJumpWindow())
+            {
+                // 在快速跳躍窗口內，等待跳躍執行
+                // 如果玩家已經離開地面（表示快速跳躍已執行），切換到 Jump 狀態
+                if (!playerMove.IsGrounded())
+                {
+                    playerMove.SetCurrentState(new Jump(playerMove));
+                }
+                return;
+            }
+            
+            // 如果玩家還在按住跳躍鍵，即使 isCharging 暫時是 false，也應該保持 Charging 狀態
+            // 這可能是因為檢查時機問題，或者正在從快速跳躍轉為蓄力跳躍
+            if (playerMove.IsHoldingJumpKey())
+            {
+                // 還在按住跳躍鍵，保持 Charging 狀態，等待蓄力開始
+                return;
+            }
+            
+            // 如果不在快速跳躍窗口內、沒有蓄力、且沒有按住跳躍鍵，表示蓄力被取消，根據是否移動切換狀態
+            if (playerMove.IsMoving())
+            {
+                playerMove.SetCurrentState(new Move(playerMove));
+            }
+            else
+            {
+                playerMove.SetCurrentState(new Idle(playerMove));
+            }
+            return;
         }
     }
     //處理人物運動

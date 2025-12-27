@@ -47,6 +47,7 @@ public class PlayerMove : MonoBehaviour
     public float maxJumpForce = 15f;     // 最大跳躍力度
     public float chargeRate = 20f;       // 蓄力速度
     public float maxChargeTime = 1.5f;   // 最大蓄力時間
+    public float quickJumpThreshold = 0.25f;  // 快速跳躍與蓄力跳躍的分界時間（秒）
     
     [Header("跳躍緩衝設定")]
     public float coyoteTime = 0.15f;     // 土狼時間（離地後仍可跳躍的時間）
@@ -64,6 +65,8 @@ public class PlayerMove : MonoBehaviour
     private bool isCharging = false;
     private float currentChargeTime = 0f;
     private float currentJumpForce = 0f;
+    private float jumpPressTime = -1f;  // 按下跳躍鍵的時間
+    private bool isQuickJump = false;   // 是否為快速跳躍（不蓄力）
     
     [Header("跳躍緩衝狀態")]
     private float lastGroundedTime = 0f;     // 最後一次在地面的時間
@@ -75,6 +78,9 @@ public class PlayerMove : MonoBehaviour
     [Header("鉤索系統")]
     public GrapplingHook grapplingHook;
     public KeyCode grappleKey = KeyCode.F; // 設定 F 鍵為鉤索
+    
+    [Header("蓄力跳躍取消")]
+    public KeyCode cancelChargeKey = KeyCode.Mouse0; // 預設左鍵取消蓄力
  
     [Header("空中下墜調整")]
     public bool enableExtraGravity = true;
@@ -125,6 +131,20 @@ public class PlayerMove : MonoBehaviour
     public bool IsCharging()
     {
         return isCharging;
+    }
+    
+    // 檢查是否在快速跳躍的時間窗口內（0.25秒內）
+    public bool IsInQuickJumpWindow()
+    {
+        if (jumpPressTime < 0f) return false;
+        float holdTime = Time.time - jumpPressTime;
+        return holdTime < quickJumpThreshold && isQuickJump;
+    }
+    
+    // 檢查是否正在按住跳躍鍵
+    public bool IsHoldingJumpKey()
+    {
+        return inputEnabled && Input.GetButton("Jump");
     }
     
     // 獲取玩家移動方向，供跳墊使用
@@ -489,6 +509,13 @@ public class PlayerMove : MonoBehaviour
         bool jumpUp = Input.GetButtonUp("Jump");
         isJumpHeld = jumpHeld;
         
+        // 檢查左鍵取消蓄力
+        if (inputEnabled && Input.GetKeyDown(cancelChargeKey) && isCharging)
+        {
+            CancelCharging();
+            return;
+        }
+        
         // 開始蓄力（按下跳躍鍵）
         if (jumpDown)
         {
@@ -499,14 +526,29 @@ public class PlayerMove : MonoBehaviour
             }
             else if (!isCharging)
             {
+                // 記錄按下跳躍鍵的時間
+                jumpPressTime = Time.time;
+                isQuickJump = true;  // 預設為快速跳躍
+                
+                // 無論在地面還是空中，都等待0.25秒後才開始蓄力
+                // 這樣可以區分快速跳躍和蓄力跳躍
+            }
+        }
+        
+        // 檢查是否應該從快速跳躍轉為蓄力跳躍
+        if (jumpHeld && !isCharging && jumpPressTime >= 0f)
+        {
+            float holdTime = Time.time - jumpPressTime;
+            if (holdTime >= quickJumpThreshold)
+            {
+                // 按住超過0.25秒，開始蓄力
+                isQuickJump = false;
                 if (CanJump())
                 {
-                    // 在地面或土狼時間內，立即開始蓄力
                     StartCharging();
                 }
                 else
                 {
-                    // 在空中，開始預蓄力
                     StartPreCharging();
                 }
             }
@@ -519,9 +561,27 @@ public class PlayerMove : MonoBehaviour
         }
         
         // 釋放跳躍（鬆開跳躍鍵）
-        if (jumpUp && isCharging)
+        if (jumpUp)
         {
-            ReleaseJump();
+            if (isCharging)
+            {
+                // 正在蓄力，執行蓄力跳躍
+                ReleaseJump();
+            }
+            else if (jumpPressTime >= 0f && isQuickJump)
+            {
+                // 快速跳躍（按下後0.25秒內放開）
+                float holdTime = Time.time - jumpPressTime;
+                if (holdTime < quickJumpThreshold && CanJump())
+                {
+                    // 執行普通跳躍（最小力度）
+                    PerformQuickJump();
+                }
+            }
+            
+            // 重置狀態
+            jumpPressTime = -1f;
+            isQuickJump = false;
         }
         
         // 如果不在蓄力狀態，重置蓄力時間
@@ -600,6 +660,45 @@ public class PlayerMove : MonoBehaviour
             float chargeProgress = GetChargeProgress();
             Debug.Log($"空中預蓄力完成 - 力度: {currentJumpForce:F1} (蓄力時間: {currentChargeTime:F2}s, 進度: {chargeProgress:P0}) - 著地後按空格鍵釋放");
             // 保持蓄力狀態，不重置
+        }
+    }
+    
+    // 執行快速跳躍（普通跳躍，最小力度）
+    void PerformQuickJump()
+    {
+        if (!CanJump()) return;
+        
+        // 計算跳躍力度（高能模式下增強）
+        float jumpForce = minJumpForce;
+        if (isHighEnergyMode)
+        {
+            jumpForce *= highEnergyJumpMultiplier;
+        }
+        
+        // 重置Y軸速度，確保跳躍高度一致
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        // 使用 Impulse 模式確保 FPS 無關（瞬間施加力）
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        hasJumpedSinceGrounded = true;
+        jumpStartTime = Time.time;
+        
+        bool usingCoyoteTime = !isGrounded && (Time.time - lastGroundedTime <= coyoteTime);
+        string jumpType = usingCoyoteTime ? " [土狼時間]" : " [地面跳躍]";
+        string energyMode = isHighEnergyMode ? " [高能模式]" : "";
+        Debug.Log($"快速跳躍力度: {jumpForce:F1}{jumpType}{energyMode}");
+    }
+    
+    // 取消蓄力
+    void CancelCharging()
+    {
+        if (isCharging)
+        {
+            isCharging = false;
+            currentChargeTime = 0f;
+            currentJumpForce = minJumpForce;
+            jumpPressTime = -1f;
+            isQuickJump = false;
+            Debug.Log("蓄力跳躍已取消");
         }
     }
     
